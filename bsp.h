@@ -124,7 +124,7 @@ typedef struct {
  * endereço de registrador
  */
 EXPORT error_t i2c_transmit(i2c_device_t device, buffer_view_t buffer) {
-	return HAL_I2C_Master_Transmit(device.i2c, device.address, buffer.data,
+	return HAL_I2C_Master_Transmit(device.i2c, (device.address << 1), buffer.data,
 			buffer.size, TIMEOUT);
 }
 /***
@@ -132,7 +132,7 @@ EXPORT error_t i2c_transmit(i2c_device_t device, buffer_view_t buffer) {
  * endereço de registrador
  */
 EXPORT error_t i2c_receive(i2c_device_t device, buffer_view_t buffer) {
-	return HAL_I2C_Master_Receive(device.i2c, device.address, buffer.data,
+	return HAL_I2C_Master_Receive(device.i2c, (device.address << 1), buffer.data,
 			buffer.size, TIMEOUT);
 }
 
