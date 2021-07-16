@@ -1,36 +1,39 @@
 # INA219
 
 ## Propósito
- Pra que serve o sensor?
+Sensor capaz de medir a corrente e tensão passando por Vin- e Vin+
 
 ## Exemplo
+Setup
 ```c
-ina219_t ina = {
-        .hi2c = &hi2c1,
-        .address = (0x40 << 1)
+ina219_config_t config = { 
+        .mode = INA_Cont_Shunt_Bus_voltage, 
+        .shuntADCResolution = INA_SMode_12bit, 	
+        .busADCResolution = INA_BMode_12bit, 	
+        .shuntVoltageRange = INA_Range_40, 		
+        .busVoltageRange = 0x0000 
 };
-
-INA_Reset(ina);
-
-ina219_config_t config = {
-        .mode = Cont_Shunt_Bus_voltage,
-        .shuntADCResolution = SMode_12bit,
-        .busADCResolution = BMode_12bit,
-        .shuntVoltageRange = Range_320,
-        .busVoltageRange = Bus_32v
+i2c_device_t dev = { 
+        .i2c = &hi2c1, 
+        .address = 0x40 
 };
-
-INA_Configuration(ina, config);
-INA_Calibration(ina, 1.0, 0.1);
-
+ina219_t ina = { .config = config, .device = dev };
+ina219_reset(ina);
+ina219_config(ina);
+ina219_calibrate(&ina, INA219_FULL_16V_40);
 ina219_values_t valor;
-INA_Values(ina, &valor);
+```
 
-printf("Valor: %f %f\r\n", valor.Bus_Voltage, valor.Shunt_Voltage);
-
+Medida:
+```c
+ina219_measure(ina, &valor);
+printf("Voltage: %f\r\n", valor.Bus_Voltage);
+printf("Current: %f\r\n", valor.Current);
+printf("Power: %f\r\n", valor.Power);
+printf("Shunt: %f\r\n", valor.Shunt_Voltage);
 ```
 ## Documentação
  Como estão organizadas as funções?
 
 ## Notas
- Tem alguma coisa que é bom saber antes de usar a biblioteca?
+**_Ainda não está funcionando a medição da Potencia ou Corrente. _**
