@@ -1,7 +1,7 @@
 # MPX5700
 
 ## Propósito
-Sensor de pressão para o balão
+Sensor de pressão, usamos para medir a pressão externa em altitudes de sondas atmosféricas (>10km). 
 
 ## Exemplo
 Setup
