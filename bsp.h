@@ -361,6 +361,31 @@ EXPORT result8_t uart_read8(uart_connection_t conn) {
  *
  */
 #ifdef HAL_ADC_MODULE_ENABLED
+typedef ADC_HandleTypeDef adc_t;
+EXPORT void adc_init(adc_t* adc){
+	HAL_ADC_Start(adc);
+}
+
+EXPORT result16_t adc_read(adc_t* adc){
+	result16_t out = {.hasError = 1, .value = 0xFF};
+	out.value = HAL_ADC_GetValue(adc);
+	out.hasError = adc->ErrorCode; // ignore: erro
+	return out;
+}
 
 #endif
+
+/***
+ * MODULO PWM
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
+
 #endif /* INC_BSP_H_ */
