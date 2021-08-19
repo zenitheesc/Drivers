@@ -31,5 +31,5 @@ Uma curva de calibração genérica está apresentada abaixo, mais detalhes sobr
 ![curva de calibração](https://github.com/CarlosCraveiro/Drivers/blob/GUVC-S10GD/GUVC-S10GD/extra_doc/tension_current_relation_2.png)
 
 ## Notas
--Faz se necessário pré-configurar o **guvcs10gd.h** para cada projeto-
+- Faz se necessário pré-configurar o **guvcs10gd.h** para cada projeto
 
