@@ -6,7 +6,14 @@ Sensor de Radiação UV-C , que medirá a densidade de radiação do tipo UV-C (
 ## Exemplo
 Setup
 ```c
-guvcs10gd_t guvc = {.adc = &hadc1};
+guvcs10gd_t guvc = {
+	.adc = &hadc1,
+	.converter.current.amplitude = 200000, //unit => pico-amperes
+	.converter.current.offset = 200000,    //unit => pico-amperes
+	.converter.tension.amplitude = 1500,   //unit => mili-volts
+	.converter.tension.offset = 1500,      //unit => mili-volts
+	.converter.phase_difference = 0        //unit => degrees
+};
 guvcs10gd_init(guvc);
 ```
 
