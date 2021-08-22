@@ -35,7 +35,7 @@ uint16_t guvcs10gd_conv_tension_to_current(guvcs10gd_t guvc, result16_t raw_data
 	}
 	
 	uint16_t converter_constant =  guvc.converter.current.amplitude / guvc.converter.tension.amplitude;
-	int phase_param = (guvc.converter.phase_difference < 180)? 1 : -1;
+	int phase_param = (guvc.converter.phase_difference < 90 || guvc.converter.phase_difference >= 270)? 1 : -1;
 	uint16_t output_current = converter_constant * (output_tension - guvc.converter.tension.offset) * phase_param + guvc.converter.current.offset;
 
 	return output_current;
