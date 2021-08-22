@@ -10,20 +10,53 @@
 
 #include "bsp.h"
 
+
+
+/* TYPEDEFS */
+
+typedef struct {
+
+	float offset;
+	float amplitude;
+
+} guvcs10gd_conv_param_t
+
+
 typedef struct {
 	adc_t *adc;
+	
+	struct {
+		
+		guvcs10gd_conv_param_t tension; //unit => mili-volts
+		guvcs10gd_conv_param_t current; //unit => pico-amperes
+		uint16_t phase_difference;      //unit => degrees
+
+	} converter;
+
 } guvcs10gd_t;
 
-error_t guvcs10gd_init(guvcs10gd_t guvc);
-result16_t guvcs10gd_get_raw(guvcs10gd_t guvc);
 
-/* 
- * More details about the equation used to base this function should be refered
- * in the README.md of this Directory
- */
-double guvcs10gd_conv_tension_to_current(result16_t raw_data);
+
+/* FUNCTIONS */
+
+// AUTHNOTE: MAYBE A GUVCS10GD CONFIG FUNCTION IN THE FUTURE
+
+error_t guvcs10gd_init(guvcs10gd_t guvc);
+
+result16_t guvcs10gd_get_raw(guvcs10gd_t raw);
+
+result16_t guvcs10gd_conv_tension_to_current(guvcs10gd_t guvc, result16_t raw_data);
 
 float guvcs10gd_get_uvcpower(guvcs10gd_t guvc);
+
+
+// OPTIONAL FUNCTIONS THAT REQUIRES MORE PROCESSING POWER FROM THE BLUEPILL(STM32)
+double guvcs10gd_accurate_conv_degrees_to_radians(uint16_t deg);
+
+double guvcs10gd_accurate_conv_tension_to_current(guvcs10gd_t guvc, result16_t raw_data);
+
+double guvcs10gd_accurate_get_uvcpower(guvcs10gd_t guvc);
+
 
 
 /*CONVERSION VALUES GOT FROM DATASHEET*/
@@ -33,6 +66,8 @@ float guvcs10gd_get_uvcpower(guvcs10gd_t guvc);
 
 
 /*CONVERSION VALUES THAT VARY BETWEEN PROJECTS - AMPLIFIER*/
+
+#define GUVCS10GD_ADC_CONVERTER(bpill_output) ((bpill_output * 3300) / 4096)
 
 //AMPLITUDE VALUES IN UNITS OF THE Y-AXIS OF THE BASED GRAPHICS
 #define GUVCS10GD_CURRENT_AMPLITUDE 200
