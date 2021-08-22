@@ -39,8 +39,6 @@ typedef struct {
 
 /* FUNCTIONS */
 
-// AUTHNOTE: MAYBE A GUVCS10GD CONFIG FUNCTION IN THE FUTURE
-
 error_t guvcs10gd_init(guvcs10gd_t guvc);
 
 result16_t guvcs10gd_get_raw(guvcs10gd_t raw);
@@ -65,20 +63,11 @@ double guvcs10gd_accurate_get_uvcpower(guvcs10gd_t guvc);
 #define GUVC_CONV_A (float)(0.01282051282)
 
 
-/*CONVERSION VALUES THAT VARY BETWEEN PROJECTS - AMPLIFIER*/
+
+/*CONVERSION BLUEPILL_ADC UNIT TO MILI-VOLTS*/
 
 #define GUVCS10GD_ADC_CONVERTER(bpill_output) ((bpill_output * 3300) / 4096)
 
-//AMPLITUDE VALUES IN UNITS OF THE Y-AXIS OF THE BASED GRAPHICS
-#define GUVCS10GD_CURRENT_AMPLITUDE 200
-#define GUVCS10GD_TENSION_AMPLITUDE 1.5
-
-// OFFSET VALUES IN UNITS OF THE Y-AXIS OF THE BASED GRAPHICS
-#define GUVCS10GD_CURRENT_OFFSET 200
-#define GUVCS10GD_TENSION_OFFSET 1.5
-
-// PHASE_DIFFERENCE AS 0 OR PI (in radians)
-#define GUVCS10GD_PHASE_DIFFERENCE 0
 
 
 /*ERRORS CODE-SHEET*/
@@ -87,5 +76,6 @@ double guvcs10gd_accurate_get_uvcpower(guvcs10gd_t guvc);
 #define GUVCS10GD_READ_ERROR ((float) -101);
 
 
-#endif /* __INC_APPLICATION_GUVCS10GD_H__*/
+
+#endif /*__INC_APPLICATION_GUVCS10GD_H__*/
 
