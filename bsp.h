@@ -371,8 +371,13 @@ EXPORT error_t adc_init(adc_t* adc){
 EXPORT result16_t adc_read(adc_t* adc){
 	result16_t out = {.hasError = 1, .value = 0xFF};
 	out.value = HAL_ADC_GetValue(adc);
-	out.hasError = adc->ErrorCode; // ignore: erro
+	out.hasError = adc->ErrorCode;
 	return out;
+}
+
+EXPORT float adc_raw_to_voltage(const uint16_t value){
+	const float volts_per_step = (3.3f - 0.f)/4095.f;
+	return volts_per_step * value;
 }
 
 #endif
