@@ -362,8 +362,10 @@ EXPORT result8_t uart_read8(uart_connection_t conn) {
  */
 #ifdef HAL_ADC_MODULE_ENABLED
 typedef ADC_HandleTypeDef adc_t;
-EXPORT void adc_init(adc_t* adc){
+EXPORT error_t adc_init(adc_t* adc){
 	HAL_ADC_Start(adc);
+	// Na CubeIDE está com um falso-positivo de erro sobre o ErrorCode, mas compila sem errros
+	return adc->ErrorCode;
 }
 
 EXPORT result16_t adc_read(adc_t* adc){
