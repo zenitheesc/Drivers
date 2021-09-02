@@ -75,7 +75,7 @@ typedef struct {
 } result16_t;
 
 /**
- * Agrupa o valor de uma operação de 16 bits e se teve algum erro
+ * Agrupa o valor de uma operação de 8 bits e se teve algum erro
  * mais detalhes na result16_t
  */
 typedef struct {
