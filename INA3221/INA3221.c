@@ -24,7 +24,7 @@ error_t ina3221_init(ina3221_t ina) {
 }
 
 error_t ina3221_config(ina3221_t ina) {
-0
+
     uint16_t config_register = 0;
     uint8_t address_config = CONFIG_ADR;
 
