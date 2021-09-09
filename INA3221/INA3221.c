@@ -6,6 +6,9 @@
 
 
 error_t ina3221_init(ina3221_t ina) {
+    if(!ina3221_alive(ina)){
+    	return 1;
+    }
 
     uint8_t address_config = CONFIG_ADR;
     uint16_t bit_config = RESET_CONFIG;
