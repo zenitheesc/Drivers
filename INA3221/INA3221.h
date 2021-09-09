@@ -84,7 +84,7 @@ typedef struct {
 error_t ina3221_init(ina3221_t ina);
 error_t ina3221_config(ina3221_t ina);
 error_t ina3221_mensurement(ina3221_t ina, ina3221_values_t *values);
-error_t ina3221_alive(ina3221_t ina);
+bool ina3221_alive(ina3221_t ina);
 
 
 

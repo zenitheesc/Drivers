@@ -125,10 +125,10 @@ error_t ina3221_mensurement(ina3221_t ina, ina3221_values_t *values){
     return 0;
 }
 
-uint16_t ina3221_alive(ina3221_t ina) {
+bool ina3221_alive(ina3221_t ina) {
     result16_t code = i2c_read16(ina.device, DIE_ADR);
     if (code.value != DIE_CODE){
-        return code.value
+        return false;
     }
-    return 0
+    return true;
 }
