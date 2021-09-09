@@ -8,6 +8,7 @@
 
 #include "bsp.h"
 #include <stdint.h>
+#include <stdbool.h>
 
 //      REGISTER_NAME     ADDRESS(HEX)
 #define CONFIG_ADR            0x00
