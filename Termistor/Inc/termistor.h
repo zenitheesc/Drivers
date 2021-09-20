@@ -2,25 +2,22 @@
  * termistor.h
  *
  *  Created on: 25 de mai de 2021
- *      Author: gushi
+ *      Author: gabrielkenji18950@gmail.com
  */
 
 #ifndef INC_TERMISTOR_H_
 #define INC_TERMISTOR_H_
-/******************* Define Thermistors Pins below******************/
 
 
-/*
-		#define TH1_Pin GPIO_PIN_2
-		#define TH1_GPIO_Port GPIOA
-		#define TH2_Pin GPIO_PIN_3
-		#define TH2_GPIO_Port GPIOA
-
-		CHECAR QUAIS PINOS SÃO ADC
-*/
+#include <inttypes.h>
 
 
 
-double Temp_GetValue(void);  // put cursor at the entered position row (0 or 1), col (0-15);
-double TEMP_GETVALUE(void);
+
+
+uint16_t *ADC_init(void);
+
+float* Temp_GetValue( uint16_t vector[], int Length);  /*Converts ADC readings in temperature values(ºC)*/
+
+uint32_t ADC_DMA_Init(uint32_t size, uint32_t vetor[]); /*Iniciates ADC in DMA mode and saves its readings*/
 #endif /* INC_TERMISTOR_H_ */
