@@ -11,10 +11,8 @@ int block_device_read(const struct lfs_config *c, lfs_block_t block,
 
 	uint32_t pageInBlock = off / W25Q_PAGE_SIZE;
 	uint32_t offsetInPage = off % W25Q_PAGE_SIZE;
-	uint32_t pageAddress = block * W25Q_SECTOR_SIZE
-			+ (pageInBlock * W25Q_PAGE_SIZE);
 
-	w25q_address_t address = { .page = pageAddress, .offset = offsetInPage };
+	w25q_address_t address = { .sector_index=block, .page_index=pageInBlock, .offset_bytes=offsetInPage};
 	buffer_view_t view = { .data = buffer, .size = size };
 	w25q_page_read(_littlefs_flash, view, address);
 	return 0;
@@ -25,10 +23,8 @@ int block_device_prog(const struct lfs_config *c, lfs_block_t block,
 
 	uint32_t pageInBlock = off / W25Q_PAGE_SIZE;
 	uint32_t offsetInPage = off % W25Q_PAGE_SIZE;
-	uint32_t pageAddress = block * W25Q_SECTOR_SIZE
-			+ (pageInBlock * W25Q_PAGE_SIZE);
 
-	w25q_address_t address = { .page = pageAddress, .offset = offsetInPage };
+	w25q_address_t address = { .sector_index=block, .page_index=pageInBlock, .offset_bytes=offsetInPage};
 	buffer_view_t view = { .data = (uint8_t* const ) buffer, .size = size };
 	w25q_page_write(_littlefs_flash, view, address);
 	return 0;
