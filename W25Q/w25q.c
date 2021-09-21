@@ -39,7 +39,7 @@ static void wait_busy(w25q_t flash) {
 	buffer_view_t data = { .data = &status, .size = 1 };
 	buffer_view_t instr = { .data = (uint8_t*)&W25Q_RD_STATUS1, .size = 1 };
 	gpio_low(flash.dev.pin);
-	spi_transmit(flash.dev,	 instr);
+	spi_transmit(flash.dev, instr);
 	do {
 		spi_receive(flash.dev, data);
 		delay_ms(1);
@@ -166,7 +166,7 @@ error_t w25q_page_read(w25q_t flash, buffer_view_t rx_data,
 	}
 
 	uint32_t byte_addr = byte_address(address);
-	uint8_t addr_vec[4] = { byte_addr  >> 16, byte_addr >> 8, byte_addr, 0 };
+	uint8_t addr_vec[4] = { byte_addr >> 16, byte_addr >> 8, byte_addr, 0 };
 	buffer_view_t addr = { .data = addr_vec, .size = sizeof(addr_vec) };
 	buffer_view_t instr = { .data = (uint8_t*) &W25Q_READ, .size = 1 };
 	error_t error = 0;
