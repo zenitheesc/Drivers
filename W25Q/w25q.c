@@ -48,7 +48,8 @@ static void wait_busy(w25q_t flash) {
 }
 
 static uint32_t byte_address(w25q_address_t address) {
-	return (address.page * W25Q_PAGE_SIZE) + address.offset;
+	return (address.sector_index * W25Q_SECTOR_SIZE)
+			+ (address.page_index * W25Q_PAGE_SIZE) + address.offset_bytes;
 }
 
 static uint32_t page_count_from_block_count(uint32_t blocks) {
@@ -133,9 +134,9 @@ error_t w25q_init(w25q_t *flash, bool check_capacity) {
 
 error_t w25q_page_write(w25q_t flash, buffer_view_t tx_data,
 		w25q_address_t address) {
-	if ((address.offset + tx_data.size > W25Q_PAGE_SIZE)
+	if ((address.offset_bytes + tx_data.size > W25Q_PAGE_SIZE)
 			|| (tx_data.size == 0)) {
-		tx_data.size = W25Q_PAGE_SIZE - address.offset;
+		tx_data.size = W25Q_PAGE_SIZE - address.offset_bytes;
 	}
 
 	uint32_t byte_addr = byte_address(address);
