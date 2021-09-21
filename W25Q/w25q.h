@@ -26,8 +26,9 @@ typedef struct {
  */
 typedef struct {
 	// page address
-	uint32_t page;
-	uint32_t offset;
+	uint32_t sector_index;
+	uint32_t page_index;
+	uint32_t offset_bytes;
 } w25q_address_t;
 
 /**
