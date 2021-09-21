@@ -66,12 +66,13 @@ struct lfs_config get_littlefs_config(w25q_t flash) {
 error_t littlefs_init(w25q_t flash) {
 	_littlefs_flash = flash;
 	cfg = get_littlefs_config(flash);
+
 	int err = lfs_mount(&file_system, &cfg);
 	if (err) {
 		w25q_chip_erase(flash);
 		lfs_format(&file_system, &cfg);
-		lfs_mount(&file_system, &cfg);
+		err = lfs_mount(&file_system, &cfg);
 	}
-	return 0;
+	return err;
 }
 
