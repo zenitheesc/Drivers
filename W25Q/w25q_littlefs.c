@@ -31,7 +31,8 @@ int block_device_prog(const struct lfs_config *c, lfs_block_t block,
 }
 
 int block_device_erase(const struct lfs_config *c, lfs_block_t block) {
-	w25q_sector_erase(_littlefs_flash, block);
+	uint32_t sector_index = block;
+	w25q_sector_erase(_littlefs_flash, sector_index);
 	return 0;
 }
 
