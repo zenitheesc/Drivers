@@ -54,7 +54,7 @@ struct lfs_config get_littlefs_config(w25q_t flash) {
 					.block_count = block_count, 		//
 					.lookahead_size = block_count / 8,   	//
 					.cache_size = W25Q_PAGE_SIZE,     		//
-					.block_cycles = 1000,		//
+					.block_cycles = 500,		//
 			};
 
 	return cfg;
