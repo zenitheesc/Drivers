@@ -4,12 +4,15 @@
  * Author: Carlos Craveiro (@CarlosCraveiro)
  * Created On: September 25, 2021
  *
- * Brief Description:
- * */
+ * Brief Description:	The code of the library to abstract some overcomplicated functionalities 
+ * 						of "stm32f1xx_hal_can.h" to the standard projects developed by the 
+ * 						Zenith's Low Level Programming Team.
+ */
 
 #include "CANZenTool.h"
+#include <stdbool.h>
 
-void CANZenTool_setFilter(CAN_HandleTypeDef* hcan, CAN_FilterTypeDef* canfilterconfig , uint8_t isActive, uint32_t filterBank, uint32_t filterId, uint32_t filterMaskId) {
+void CANZenTool_setFilter(CAN_HandleTypeDef* hcan, CAN_FilterTypeDef* canFilterConfig , bool isActive, uint32_t filterBank, uint32_t filterId, uint32_t filterMaskId) {
 	
 	if(isActive) {
 		
@@ -18,20 +21,20 @@ void CANZenTool_setFilter(CAN_HandleTypeDef* hcan, CAN_FilterTypeDef* canfilterc
 		
 		canfilterconfig->FilterActivation = CAN_FILTER_DISABLE;
 	}
-	canfilterconfig->FilterBank = filterBank;
-	canfilterconfig->FilterFIFOAssignment = CAN_RX_FIFO0;
-	canfilterconfig->FilterIdHigh = filterId << 5;
-	canfilterconfig->FilterIdLow = 0x0000;
-	canfilterconfig->FilterMaskIdHigh = filterMaskId << 5;
-	canfilterconfig->FilterMaskIdLow = 0x0000;
-	canfilterconfig->FilterMode = CAN_FILTERMODE_IDMASK;
-	canfilterconfig->SlaveStartFilterBank = 0;
+	canFilterConfig->FilterBank = filterBank;
+	canFilterConfig->FilterFIFOAssignment = CAN_RX_FIFO0;
+	canFilterConfig->FilterIdHigh = filterId << 5;
+	canFilterConfig->FilterIdLow = 0x0000;
+	canFilterConfig->FilterMaskIdHigh = filterMaskId << 5;
+	canFilterConfig->FilterMaskIdLow = 0x0000;
+	canFilterConfig->FilterMode = CAN_FILTERMODE_IDMASK;
+	canFilterConfig->SlaveStartFilterBank = 0;
 	
-	HAL_CAN_ConfigFilter(&hcan, &canfilterconfig);
+	HAL_CAN_ConfigFilter(&hcan, &canFilterConfig);
 }
 
 
-CAN_TxHeaderTypeDef CANZenTool_writeStdCanFrame(uint32_t dlc, uint32_t id, uint8_t isData) {
+CAN_TxHeaderTypeDef CANZenTool_writeStdCanFrame(uint32_t dlc, uint32_t id, bool isData) {
 
 	CAN_TxHeaderTypeDef TxHeader;
 
