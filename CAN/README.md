@@ -19,16 +19,64 @@ This function sets the configuration parameters passed in the function call and 
 
 
 ### Sample
-Basic Example
+
+Setting just one Filter Bank
 ```c
+
+/* General Configs */
+
 CAN_HandleTypeDef hcan;
+
+bool wholeFilterIsActive = true;
+
+/* Filter Configs */
 
 CAN_FilterTypeDef canFilterConfig;
 
-CANZenTool_setFilter(&hcan, &canFilterConfig , true, 10, 0x103, 0x101);
+uint32_t filterBank = 10;
+
+uint32_t filterId = 0x103;
+
+uint32_t filterMaskId = 0x101;
+
+
+/* The Function */
+
+CANZenTool_setFilter(&hcan, &canFilterConfig , wholeFilterIsActive, filterBank, filterId, filterMaskId);
 
 ```
 
+Setting more than one Filter Bank
+```c
+/* General Configs */
+
+CAN_HandleTypeDef hcan;
+
+bool wholeFilterIsActive = true;
+
+
+/*  */
+
+CAN_FilterTypeDef canFilterConfig1;
+
+uint32_t filterBank1 = 10;
+
+uint32_t filterId1 = 0x102;
+
+uint32_t filterMaskId1 = 0x101;
+
+/*  */
+CANZenTool_setFilter(&hcan, &canFilterConfig1 , wholeFilterIsActive, filterBank1, filterId1, filterMaskId1);
+
+
+/*  */
+
+
+/**/
+
+CANZenTool_setFilter(&hcan, &canFilterConfig2, );
+
+```
 ## Function `CANZenTool_writeStdCanFrame()`
 
 ### Sample
