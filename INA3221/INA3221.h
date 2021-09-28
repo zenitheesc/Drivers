@@ -18,20 +18,19 @@
 #define CH2_BUS_V             0x04
 #define CH3_SHUNT_V           0x05
 #define CH3_BUS_V             0x06
-#define DIE_ADR                0xFF
-
+#define DIE_ADR               0xFF
 
 // CONST
 
 #define BIT_CH1              14
 #define BIT_CH2              13
 #define BIT_CH3              12
-#define BIT_AVG              11
-#define BIT_BUS_CT           8
-#define BIT_SH_CT            5
-#define OP_MODE              2
+#define BIT_AVG              9
+#define BIT_BUS_CT           6
+#define BIT_SH_CT            3
+#define BIT_MODE             0
 #define DIE_CODE             0x3220
-#define RESET_CONFIG        (1<<15)
+#define RESET_CONFIG         (1<<15)
 
 #define T_SH_CONV             40e-6f
 #define T_BUS_CONV            8e-3f
