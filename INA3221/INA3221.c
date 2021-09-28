@@ -107,9 +107,9 @@ error_t ina3221_mensurement(ina3221_t ina, ina3221_values_t *values){
 
     // Converted Current values   U(shunt) = R * i
 
-    float CH1_current = (values->ch1_sh_v) / (values->ch1_resistor);
-    float CH2_current = (values->ch2_sh_v) / (values->ch2_resistor);
-    float CH3_current = (values->ch3_sh_v) / (values->ch3_resistor);
+	float CH1_current = (values->ch1_sh_v) / (ina.config.ch1_resistor);
+	float CH2_current = (values->ch2_sh_v) / (ina.config.ch2_resistor);
+	float CH3_current = (values->ch3_sh_v) / (ina.config.ch3_resistor);
 
     values->ch1_current = CH1_current;
     values->ch2_current = CH2_current;

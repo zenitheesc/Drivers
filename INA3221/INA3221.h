@@ -44,7 +44,11 @@ typedef struct {
     uint8_t v_bus_ct;
     uint8_t v_sh_ct;
     uint8_t op_mode;
-    uint8_t manuf_id;
+
+	float ch1_resistor;
+	float ch2_resistor;
+	float ch3_resistor;
+
 
 } ina3221_config_t;
 
