@@ -62,7 +62,7 @@ error_t ina3221_mensurement(ina3221_t ina, ina3221_values_t *values){
         return raw.hasError;
     }
 
-    final_value = T_SH_CONV * ((int16_t) raw.value);
+	final_value = T_SH_CONV * to_value(raw.value);
 
     values->ch1_sh_v = final_value;
 
@@ -72,7 +72,7 @@ error_t ina3221_mensurement(ina3221_t ina, ina3221_values_t *values){
         return raw.hasError;
     }
 
-    final_value = T_SH_CONV * ((int16_t) raw.value);
+	final_value = T_SH_CONV * to_value(raw.value);
 
     values->ch2_sh_v = final_value;
 
@@ -82,7 +82,7 @@ error_t ina3221_mensurement(ina3221_t ina, ina3221_values_t *values){
         return raw.hasError;
     }
 
-    final_value = T_SH_CONV * ((int16_t) raw.value);
+	final_value = T_SH_CONV * to_value(raw.value);
 
     values->ch3_sh_v = final_value;
 
@@ -93,7 +93,7 @@ error_t ina3221_mensurement(ina3221_t ina, ina3221_values_t *values){
     if (raw.hasError) {
         return raw.hasError;
     }
-    final_value = T_BUS_CONV * ((int16_t) raw.value);
+	final_value = T_BUS_CONV * to_value(raw.value);
 
     values->ch1_bus_v = final_value;
 
@@ -102,7 +102,7 @@ error_t ina3221_mensurement(ina3221_t ina, ina3221_values_t *values){
     if (raw.hasError) {
         return raw.hasError;
     }
-    final_value = T_BUS_CONV * ((int16_t) raw.value);
+	final_value = T_BUS_CONV * to_value(raw.value);
 
     values->ch2_bus_v = final_value;
 
@@ -111,7 +111,7 @@ error_t ina3221_mensurement(ina3221_t ina, ina3221_values_t *values){
     if (raw.hasError) {
         return raw.hasError;
     }
-    final_value = T_BUS_CONV * ((int16_t) raw.value);
+	final_value = T_BUS_CONV * to_value(raw.value);
 
     values->ch3_bus_v = final_value;
 
