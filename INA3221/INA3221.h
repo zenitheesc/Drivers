@@ -37,13 +37,28 @@
 
 typedef struct {
 
-    bool ch1;
-    bool ch2;
-    bool ch3;
-    uint8_t avg_mode;
-    uint8_t v_bus_ct;
-    uint8_t v_sh_ct;
-    uint8_t op_mode;
+	/**
+	 * ativa os canais
+	 */
+	bool ch1;
+	bool ch2;
+	bool ch3;
+	/**
+	 * ativa média móvel (N=)
+	 */
+	uint8_t avg_mode;
+	/**
+	 * seta o tempo de conversão da medida do VBUS
+	 */
+	uint8_t v_bus_ct;
+	/**
+	 * seta o tempo de conversão da medida do VSHUNT
+	 */
+	uint8_t v_sh_ct;
+	/**
+	 * Medições continuas ou single shot
+	 */
+	uint8_t op_mode;
 
 	float ch1_resistor;
 	float ch2_resistor;
