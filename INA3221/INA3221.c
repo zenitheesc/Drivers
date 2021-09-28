@@ -115,11 +115,14 @@ error_t ina3221_mensurement(ina3221_t ina, ina3221_values_t *values){
     values->ch2_current = CH2_current;
     values->ch3_current = CH3_current;
 
-    // Potency values   (potência do bus - potência do shunt)
+	// Power values   (potência do bus - potência do shunt)
 
-    float CH1_pot = ((values->ch1_bus_v) * (values->ch1_current)) - ((values->ch1_sh_v) * (values->ch1_current));
-    float CH2_pot = ((values->ch1_bus_v) * (values->ch1_current)) - ((values->ch1_sh_v) * (values->ch1_current));
-    float CH3_pot = ((values->ch1_bus_v) * (values->ch1_current)) - ((values->ch1_sh_v) * (values->ch1_current));
+	float CH1_pot = ((values->ch1_bus_v) * (values->ch1_current))
+			- ((values->ch1_sh_v) * (values->ch1_current));
+	float CH2_pot = ((values->ch2_bus_v) * (values->ch2_current))
+			- ((values->ch2_sh_v) * (values->ch2_current));
+	float CH3_pot = ((values->ch3_bus_v) * (values->ch3_current))
+			- ((values->ch3_sh_v) * (values->ch3_current));
 
     values->ch1_pot = CH1_pot;
     values->ch2_pot = CH2_pot;
