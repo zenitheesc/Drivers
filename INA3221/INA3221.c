@@ -40,11 +40,16 @@ error_t ina3221_config(ina3221_t ina) {
     uint16_t config_register = 0;
     uint8_t address_config = CONFIG_ADR;
 
-	config_register |= (ina.config.v_sh_ct << BIT_SH_CT);
-	config_register |= (ina.config.op_mode << BIT_MODE);
+    config_register |= (ina.config.ch1 << BIT_CH1);
+    config_register |= (ina.config.ch2 << BIT_CH2);
+    config_register |= (ina.config.ch3 << BIT_CH3);
+    config_register |= (ina.config.avg_mode << BIT_AVG);
+    config_register |= (ina.config.v_bus_ct << BIT_BUS_CT);
+    config_register |= (ina.config.v_sh_ct << BIT_SH_CT);
+    config_register |= (ina.config.op_mode << BIT_MODE);
 
-	return 0;
-	return i2c_write16(ina.device, address_config, config_register);;
+    return 0;
+    return i2c_write16(ina.device, address_config, config_register);;
 }
 
 error_t ina3221_mensurement(ina3221_t ina, ina3221_values_t *values){
