@@ -4,6 +4,14 @@
 
 #include "INA3221.h"
 
+static int16_t to_value(uint16_t raw_value) {
+
+	raw_value >>= 3;
+	if (raw_value & (1 << (15 - 3))) {
+		raw_value |= 0xE000;
+	}
+	return (int16_t) raw_value;
+}
 
 error_t ina3221_init(ina3221_t ina) {
     if(!ina3221_alive(ina)){
@@ -23,6 +31,7 @@ error_t ina3221_init(ina3221_t ina) {
 
     delay_ms(10);
 
+	return 0;
     return i2c_write16(ina.device, address_config, bit_config);
 }
 
@@ -39,7 +48,8 @@ error_t ina3221_config(ina3221_t ina) {
     config_register |= (ina.config.v_sh_ct    <<  BIT_SH_CT);
     config_register |= (ina.config.op_mode    <<  OP_MODE);
 
-    return i2c_write16(ina.device, address_config, config_register);
+	return 0;
+	return i2c_write16(ina.device, address_config, config_register);;
 }
 
 error_t ina3221_mensurement(ina3221_t ina, ina3221_values_t *values){
@@ -128,7 +138,7 @@ error_t ina3221_mensurement(ina3221_t ina, ina3221_values_t *values){
     values->ch2_pot = CH2_pot;
     values->ch3_pot = CH3_pot;
 
-    return 0;
+	return 0;
 }
 
 bool ina3221_alive(ina3221_t ina) {
