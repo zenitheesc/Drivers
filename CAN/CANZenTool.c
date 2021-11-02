@@ -76,7 +76,16 @@ void CANZenTool_setFilter(CAN_HandleTypeDef* hcan, CAN_FilterTypeDef* canFilterC
 void CANZenTool_addId(CANZenTool_IdNdMaskBuilder_t* this, uint32_t newId) {
     
     this->m_idBuffer &= newId;
-    this->m_maskBuffer = (this->m_rawIds == 0)? this->m_maskBuffer : (this->m_maskBuffer & (~(this->m_idBuffer ^ newId)));
+    
+    /* If is the first Id added */
+    if(this->m_rawIds == 0) {
+       this->m_maskBuffer = this->m_maskBuffer;
+
+    } else {
+        uint32_t incomeMaskBuffer = ~(this->m_idBuffer ^ newId);
+        this->m_maskBuffer = this->m_maskBuffer & incomeMaskBuffer;
+    }
+
     this->m_rawIds++;
 
 }
@@ -132,7 +141,7 @@ uint32_t CANZenTool_getResultId(CANZenTool_IdNdMaskBuilder_t* this) {
  *
  * @return  a new "builder" structure (proto-class) @ref CANZenTool_IdNdMaskBuilder_t.
  */
-CANZenTool_IdNdMaskBuilder_t CANZenTool_newFilterBuilder() {
+CANZenTool_IdNdMaskBuilder_t CANZenTool_newIdNdMaskBuilder() {
 
     CANZenTool_IdNdMaskBuilder_t newBuilder;
     newBuilder.addId = &CANZenTool_addId;
