@@ -10,7 +10,6 @@
  */
 
 #include "CANZenTool.h"
-#include <stdbool.h>
 
 /**
  * @brief	Sets the configurations parameters passed in the function call 
@@ -44,10 +43,10 @@ void CANZenTool_setFilter(CAN_HandleTypeDef* hcan, CAN_FilterTypeDef* canFilterC
 	
 	if(isActive) {
 		
-		canfilterconfig->FilterActivation = CAN_FILTER_ENABLE;
+		canFilterConfig->FilterActivation = CAN_FILTER_ENABLE;
 	} else {
 		
-		canfilterconfig->FilterActivation = CAN_FILTER_DISABLE;
+		canFilterConfig->FilterActivation = CAN_FILTER_DISABLE;
 	}
 	canFilterConfig->FilterBank = filterBank;
 	canFilterConfig->FilterFIFOAssignment = CAN_RX_FIFO0;
@@ -59,7 +58,7 @@ void CANZenTool_setFilter(CAN_HandleTypeDef* hcan, CAN_FilterTypeDef* canFilterC
     canFilterConfig->FilterScale = CAN_FILTERSCALE_32BIT;
 	canFilterConfig->SlaveStartFilterBank = 0;
 
-	HAL_CAN_ConfigFilter(&hcan, &canFilterConfig);
+	HAL_CAN_ConfigFilter(hcan, canFilterConfig);
 }
 
 
@@ -105,7 +104,7 @@ void CANZenTool_addIdList(CANZenTool_IdNdMaskBuilder_t* this,  uint32_t idListLe
    
     for(int i = 0; i < idListLength; i++) {
        
-       this->addId(this, idList[i]);
+       CANZenTool_addId(this, idList[i]);
    } 
 }
 
@@ -189,7 +188,7 @@ CAN_TxHeaderTypeDef CANZenTool_writeStdCanFrame(uint32_t dlc, uint32_t id, bool 
 	TxHeader.StdId = id;
 	TxHeader.TransmitGlobalTime = DISABLE;
 
-	return TxHearder;
+	return TxHeader;
 }
 
 
@@ -209,8 +208,7 @@ CAN_TxHeaderTypeDef CANZenTool_writeStdCanFrame(uint32_t dlc, uint32_t id, bool 
  */
 void CANZenTool_sendCanFrameMsg(CAN_HandleTypeDef *hcan, CAN_TxHeaderTypeDef *TxHeader, uint8_t TxData[], uint32_t *pTxMailbox) {
 
-	 if(HAL_CAN_AddTxMessage(hcan, TxHeader, TxData, TxMailbox) != HAL_OK) {
+	 if(HAL_CAN_AddTxMessage(hcan, TxHeader, TxData, pTxMailbox) != HAL_OK) {
 	  Error_Handler();
   	}
 }
-

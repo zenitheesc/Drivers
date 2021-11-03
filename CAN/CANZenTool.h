@@ -9,8 +9,13 @@
  * 						Zenith's Low Level Programming Team.
  * */
 
-#include "stm32f1xx_hal_can.h"
+/**
+ * This refers to the "main" created by CUBEIDE where all HAL Libraries are included and where 
+ * the Error_Handler is defined.
+ */
+#include "main.h"
 
+#include <stdint.h>
 #include <stdbool.h>
 
 /* Declaration of the Structure acts as a builder for the Mask and Id for @ref CANZenTool_setFilter*/
@@ -27,7 +32,7 @@ struct CANZenTool_IdNdMaskBuilder_t {
     void (*addId)(CANZenTool_IdNdMaskBuilder_t*, uint32_t);
     uint32_t (*getResultId)(CANZenTool_IdNdMaskBuilder_t*);
     uint32_t (*getResultMask)(CANZenTool_IdNdMaskBuilder_t*);
-    void (*addIdList)(CANZenTool_IdNdMaskBuilder_t*, uint32_t[]);
+    void (*addIdList)(CANZenTool_IdNdMaskBuilder_t*, uint32_t , uint32_t[]);
 };
 
 
