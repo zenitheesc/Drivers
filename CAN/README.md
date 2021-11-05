@@ -5,6 +5,16 @@ This library was designed to help Zenith's Members to use/deal with `stm32f1xx_h
 
 ## Resume
 
+This library provides functions to help the user to:
+
+<ol>
+    <li> Find the best Id and Mask for the Filter (CANZenTool_IdNdMaskBuilder_t)</li>
+    <li> Configure the filter (CANZenTool_setFilter) </li>
+    <li> Write a standard can frame (CANZenTool_writeStdCanFrame) </li>
+    <li> Send a standard can frame (CANZenTool_sendCanFrameMsg) </li>
+</ol>
+
+
 ### Important - 1
 
 This library is not over yet!! It is an ongoing project that will evolve as long we (Zenith's Members) continue to work with CAN. So the idea is to look for our bare necessities, which means, when new opportunities to avoid code duplication and reduce painful and unnecessary journeys to H.A.L and BluePill documentation pop up, then we will come up with new features. So forget about your worries and your strife with code, when new bare necessities arise, the new features will come to you. They'll come to you!!
@@ -20,70 +30,68 @@ This function sets the configuration parameters passed in the function call and 
 
 ### Sample
 
-Setting just one Filter Bank
 ```c
-
-/* General Configs */
-
-CAN_HandleTypeDef hcan;
+/* Filter Configs */
 
 bool wholeFilterIsActive = true;
-
-/* Filter Configs */
 
 CAN_FilterTypeDef canFilterConfig;
 
-uint32_t filterBank = 10;
+uint32_t filterBank = 0;
 
-uint32_t filterId = 0x103;
+CANZenTool_IdNdMaskBuilder_t builder = CANZenTool_newIdNdMaskBuilder();
 
-uint32_t filterMaskId = 0x101;
+uint32_t ids[] = { 0xF2, 0x55 };
+builder.addIdList(&builder, 2, ids);
+uint32_t filterId = builder.getResultId(&builder);
 
+uint32_t filterMaskId = builder.getResultId(&builder);
 
 /* The Function */
+CANZenTool_setFilter(&hcan, &canFilterConfig, wholeFilterIsActive, filterBank, filterId, filterMaskId);
 
-CANZenTool_setFilter(&hcan, &canFilterConfig , wholeFilterIsActive, filterBank, filterId, filterMaskId);
-
-```
-
-Setting more than one Filter Bank
-```c
-/* General Configs */
-
-CAN_HandleTypeDef hcan;
-
-bool wholeFilterIsActive = true;
-
-
-/*  */
-
-CAN_FilterTypeDef canFilterConfig1;
-
-uint32_t filterBank1 = 10;
-
-uint32_t filterId1 = 0x102;
-
-uint32_t filterMaskId1 = 0x101;
-
-/*  */
-CANZenTool_setFilter(&hcan, &canFilterConfig1 , wholeFilterIsActive, filterBank1, filterId1, filterMaskId1);
-
-
-/*  */
-
-
-/**/
-
-CANZenTool_setFilter(&hcan, &canFilterConfig2, );
-
+/* An Important Interrupt */
+HAL_CAN_ActivateNotification(&hcan, CAN_IT_RX_FIFO0_MSG_PENDING); //Remember to activate this Interrupt!!
 ```
 ## Function `CANZenTool_writeStdCanFrame`
 
+This function pre-configures a standard CAN Frame with the specifications inserted in the function call, such as the length of the CAN Frame (DLC - the first parameter), the ID of the frame (second parameter) and if it is a data frame or not (last parameter).
+
 ### Sample
+```c
+uint32_t mailbox;
+
+/*...  some code ...*/
+
+CAN_TxHeaderTypeDef header = CANZenTool_writeStdCanFrame(8, 0xE1, true);
+uint8_t buffer[8] = { 0, [3]=0xFA };
+
+/*... some code ...*/
+
+/*... CAN Start ...*/ //CAN also can be started before, but not after any CANZenTool_sendFrameMsg() call
+
+CANZenTool_sendCanFrameMsg(&hcan, &header, buffer, &mailbox);
+```
 
 ## Function `CANZenTool_sendFrameMsg`
 
+This function in few words helps the user to send a Standard CAN Frame, already calling the ``Error_Handler`` in failure case.
+
 ### Sample
+```c
+uint32_t mailbox;
+
+/*...  some code ...*/
+
+CAN_TxHeaderTypeDef header = CANZenTool_writeStdCanFrame(8, 0xE1, true);
+uint8_t buffer[8] = { 0, [3]=0xFA };
+
+/*... some code ...*/
+
+/*... CAN Start ...*/ //CAN also can be started before, but not after any CANZenTool_sendFrameMsg() call
+
+CANZenTool_sendCanFrameMsg(&hcan, &header, buffer, &mailbox);
+```
 
 ## Struct `CANZenTool_IdNdMaskBuilder_t`
 
@@ -96,7 +104,6 @@ The idea is providing for the user a tool to create the **FilterId** and the **F
 ### Sample
 ```c
 CANZenTool_IdMask_t builder = newIdNdMaskBuilder();
-
 ```
 
 
@@ -158,7 +165,6 @@ uint32_t list[] =   {0x0C0, 0x0C1, 0x0C2, 0x0C3, 0x0C4, 0x0C5, 0x0C6, 0x0C7
                     ,0x0F0, 0x0F1, 0x0F2, 0x0F3, 0x0F4, 0x0F5, 0x0F6, 0x0F7};
     
 CANZenTool_addIdList(&builder, 21, list);
-
 ```
 
 
@@ -173,11 +179,14 @@ uint32_t list[] =   {0x0C0, 0x0C1, 0x0C2, 0x0C3, 0x0C4, 0x0C5, 0x0C6, 0x0C7
                     ,0x0F0, 0x0F1, 0x0F2, 0x0F3, 0x0F4, 0x0F5, 0x0F6, 0x0F7};
     
 builder.addIdList(&builder, 21, list);
-
 ```
 
 
 ## Function `CANZenTool_getResultMask`
+
+This function is a "getter" for the result ``filterMask``.
+
+Note: this function can be both used as a "method" of the "builder" structure or as a stand-alone function.
 
 ### Sample - Stand-alone
 ```c
@@ -188,8 +197,6 @@ CANZenTool_addId(&builder, 0x0D0);
 CANZenTool_addId(&builder, 0x0D1);
 
 uint32_t filterMask = CANZenTool_getResultMask();
-
-
 ```
 
 
@@ -207,6 +214,10 @@ uint32_t filterMask = builder.getResultMask();
 
 
 ## Function `CANZenTool_getResultId`
+
+This function is a "getter" for the result ``filterId``.
+
+Note: this function can be both used as a "method" of the "builder" structure or as a stand-alone function.
 
 ### Sample - Stand-alone
 ```c
@@ -231,6 +242,10 @@ builder.addId(&builder, 0x0D1);
 
 uint32_t filterId = builder.getResultId();
 ```
+
+## Full Sample
+
+There is one tested-working sample (created with the **"STM-CUBEIDE"**) ``main.c`` in a folder named as "CUBEIDE-sample", if you are having problems with some of the provided tools, you should check the code and see if it clarifies something.
 
 <!-- links -->
 
