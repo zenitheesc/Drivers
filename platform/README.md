@@ -14,7 +14,8 @@ circumstances, the scope is limited to transmitting and receiving raw bytes.
 
 ## Usage
 
-Just  `#include "platform.h"` in the driver. It then checks for 
+Just add the `platform/` folder to the project, then
+ `#include "platform.h"` in the driver. It then checks for 
 preprocessor macros to detect which platform is being compiled.
 For STM32, it will also attempt to find the proper chip family HAL. 
 If a platform is not found it is assumed to be running on a PC.
