@@ -80,23 +80,36 @@ should be declared on a driver-by-driver basis.
 
 #### Types
 
-- `i2c_t`
+- `gpio_pin_t`
  ```c
-  typedef int i2c_dev_t;
+typedef struct {
+	<PORT> *port;
+	uint16_t pin;
+} gpio_pin_t;
  ```
- Erro
+ GPIO Pin Type
 
-- `i2c_dev_t`
- ```c
-  typedef int i2c_dev_t;
- ```
- Erro
- 
  #### Functions
+ - `gpio_low` 
+ 
+ ```c
+ void gpio_low(gpio_pin_t pin);
+ ```
+ Reset GPIO
 
-```c
-```
+ - `gpio_high` 
+ 
+ ```c
+ void gpio_high(gpio_pin_t pin);
+ ```
+ Set GPIO
 
+ - `gpio_toggle` 
+ 
+ ```c
+ void gpio_toggle(gpio_pin_t pin);
+ ```
+ Toggle GPIO
 
 ### I2C
 
@@ -104,59 +117,121 @@ should be declared on a driver-by-driver basis.
 
 - `i2c_t`
  ```c
-  typedef int i2c_dev_t;
+  typedef <I2C_Type> i2c_dev_t;
  ```
- Erro
+
+ I2C Interface Type
 
 - `i2c_dev_t`
  ```c
-  typedef int i2c_dev_t;
+typedef struct {
+	i2c_t *i2c;
+	uint8_t address;
+} i2c_device_t;
  ```
- Erro
+
+ I2C Device Type
  
  #### Functions
 
-```c
-```
+ - `i2c_transmit` 
+ 
+ ```c
+ error_t i2c_transmit(i2c_device_t device, buffer_view_t buffer);
+ ```
+ Transmit bytes via I2C
+
+
+ - `i2c_receive` 
+ 
+ ```c
+ error_t i2c_receive(i2c_device_t device, buffer_view_t buffer);
+ ```
+ Receive bytes via I2C
 ### SPI
 
 #### Types
 - `spi_t`
  ```c
-  typedef int spi_t;
+  typedef <SPI_Type> spi_t;
  ```
- Erro
+ SPI Interface Type
 
 - `spi_dev_t`
  ```c
-  typedef int spi_dev_t;
+typedef struct {
+	spi_t *spi;
+	gpio_pin_t pin;
+} spi_device_t;
  ```
- Erro
+ SPI Device Type
  
 #### Functions
 
+ - `spi_transceive`
 ```c
+error_t spi_transceive(spi_device_t device, uint8_t register_address,
+		buffer_view_t rx_buffer, buffer_view_t tx_buffer);
 ```
+
+Transceive (Transmit and Receive) via SPI
 ### UART
 
 #### Types
 
-- `uart_t`
+ - `uart_t`
  ```c
-  typedef int uart_t;
+  typedef <UART_Type> uart_t;
  ```
- Erro
+ UART Interface Type
+
+- `uart_connection_t`
+```c
+typedef struct {
+	uart_t *uart;
+} uart_connection_t;
+```
+UART Connection Type
  #### Functions
 
+ - `uart_transmit`
 ```c
+error_t uart_transmit(uart_connection_t conn, buffer_view_t buffer);
 ```
+Transmit bytes via UART
+
+ - `uart_receive`
+```c
+error_t uart_receive(uart_connection_t conn, buffer_view_t buffer);
+```
+Transmit bytes via UART
+
 ### ADC
 
 #### Types
-
+ - `adc_t`
 ```c
+typedef <ADC_Type> adc_t;
 ```
+ADC Channel Type
+
 #### Functions
 
+ - `adc_init`
 ```c
+error_t adc_init(adc_t* adc);
 ```
+ADC initialization 
+
+ - `adc_read`
+```c
+result16_t adc_read(adc_t* adc);
+```
+ADC Read raw value
+
+ - `adc_raw_to_voltage`
+```c
+float adc_raw_to_voltage(const uint16_t value);
+```
+
+ADC conversion to volts.
