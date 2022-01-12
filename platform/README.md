@@ -12,6 +12,15 @@ Each platform implementation provides access to common (internal) peripherals,
 such as I2C, SPI, UART and ADCs. As it's expected to be implemented in various 
 circumstances, the scope is limited to transmitting and receiving raw bytes.
 
+## Usage
+
+Just  `#include "platform.h"` in the driver. It then checks for 
+preprocessor macros to detect which platform is being compiled.
+For STM32, it will also attempt to find the proper chip family HAL. 
+If a platform is not found it is assumed to be running on a PC.
+This means calls will be logged to `stdout` with no side-effects.
+
+
 ## Specification
 
 ### Common
