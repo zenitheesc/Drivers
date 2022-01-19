@@ -1,8 +1,10 @@
 ---
-name: 🐞 Error
+name: "\U0001F41E Error"
 about: Create an issue to help us to improve this project ✨
-title: "Error: "
-labels: 👀 needs triage, 🐞 error
+title: 'Error: '
+labels: ''
+assignees: ''
+
 ---
 
 ### Describe the Error
