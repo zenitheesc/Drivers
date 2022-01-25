@@ -52,7 +52,8 @@ int32_t ms5607_getPressure(i2c_device_t ms5607,uint8_t OSR_mode) {
     //            2 = 1024 Samples
     //            3 = 2048 Samples
     //            4 = 4096 Samples
- 
+
+    
     int32_t T2, dT, TEMP  ; // compensação de segunda ordem
     int64_t OFF, SENS, P, OFF2, SENS2, dT;
 
