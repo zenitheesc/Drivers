@@ -1,5 +1,5 @@
 # Driver_MPU6050_MVD
-Repositório para confecção do driver de funções mínimas para funcionamento da IMU MPU6050 a ser utilizada pelos projetos de baixo nível do Zenith. As funções utilizadas de configuração foram a taxa de atualização dos registradores internos, frequência de corte do filtro passa baixa das leituras, range máximo do giroscópio, e do acelerêmetro.
+Repositório para confecção do driver de funções mínimas para funcionamento da IMU MPU6050 a ser utilizada pelos projetos de baixo nível do Zenith. As funções utilizadas de configuração foram a taxa de atualização dos registradores internos, frequência de corte do filtro passa baixa das leituras, range máximo do giroscópio, e do acelerômetro.
 
 ## Exemplo
 
