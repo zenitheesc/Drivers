@@ -3,7 +3,7 @@
 //
 #include "MS5607.h"
 
-int convert(int n) {
+static int convert(int n) {
     int bin = 0;
     int resto;
     int ind = 1;
