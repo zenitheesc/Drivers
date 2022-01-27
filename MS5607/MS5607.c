@@ -17,61 +17,23 @@ static int convert(int n) {
     return bin;
 } //convert decimal to binary
 
-error_t ms5607_reset(i2c_device_t ms5607) {
+error_t ms5607_reset(ms5607_t ms5607) {
     //Create the reset command buffer
-    uint8_t buffer_Rcmd[1] = {RESET_CMD};
+    uint_t buffer_Rcmd[1] = {RESET_CMD};
 
     buffer_view_t buffer_resetCmd = {
-            .data = buffer_Rcmd,
-            .size = sizeof(buffer_Rcmd)
+        .data = buffer_Rcmd,
+        .size = sizeof(buffer_Rcmd)
     }
 
 
-    return i2c_transmit(ms5607, buffer_resetCmd);
+    return i2c_transmit(ms5607.device, buffer_resetCmd);
 }
 
-error_t ms5607_init(i2c_device_t ms5607) {
+uint8_t get_PROM(ms5607_t ms5607){
 
-    // reset
-    error_t resetDevice = ms5607_reset(ms5607);
-
-    if (resetDevice.hasError) {
-        return resetDevice.hasError;
-    }
-
-    delay_ms(10);
-
-    return 1;
-}
-
-int32_t ms5607_getPressure(i2c_device_t ms5607,uint8_t OSR_mode) {
-
-    // OSR_Mode: (Same for D1 and D2)
-    //            0 = 256 Samples
-    //            1 = 512 Samples
-    //            2 = 1024 Samples
-    //            3 = 2048 Samples
-    //            4 = 4096 Samples
-
-
-    
-    int32_t T2, dT, TEMP  ; // compensação de segunda ordem
-    int64_t OFF, SENS, P, OFF2, SENS2, dT;
-
-    T2 = OFF2 = SENS2 = 0;
-
-    //BEGIN read PROM (att PROM struct)
-    prom_t prom = {
-            .C1 = 0,
-            .C2 = 0,
-            .C3 = 0,
-            .C4 = 0,
-            .C5 = 0,
-            .C6 = 0
-    };
-
-    uint16_t* pt_const_prom[] = {&prom.C1, &prom.C2, &prom.C3,
-                            &prom.C4, &prom.C5, &prom.C6}
+    uint16_t* prom_pt[] = {&ms5607.prom.C1, &ms5607.prom.C2, &ms5607.prom.C3,
+                           &ms5607.prom.C4, &ms5607.prom.C5, &ms5607.prom.C6}
 
     for (int i = 1; i < 7; i++) {
 
@@ -94,8 +56,8 @@ int32_t ms5607_getPressure(i2c_device_t ms5607,uint8_t OSR_mode) {
 
 
         //Transmit / Receive system
-        i2c_transmit(ms5607, buffer_promCommand);
-        i2c_receive(ms5607, buffer_promResponse);
+        i2c_transmit(ms5607.device, buffer_promCommand);
+        i2c_receive(ms5607.device, buffer_promResponse);
 
         //Concatenate response ".data[1]+.data[0]"
         uint16_t response = (buffer_promResponse.data[1]<<8);
@@ -103,25 +65,24 @@ int32_t ms5607_getPressure(i2c_device_t ms5607,uint8_t OSR_mode) {
 
         //Write in "prom_t" struct
         int *pt;
-        pt = pt_const_prom[i];
+        pt = prom_pt[i];
         *pt = response;
     }
-    //END of read PROM
 
+    return 0;
+}
 
-    //BEGIN read D1 and D2 (att Dconst struct)
-    D_const_t Dconst = {
-            .D1 = 0,
-            .D2 = 0
-    };
+uint8_t get_Dconst(ms5607_t ms5607) {
 
-    uint32_t* pt_const_D[] = {&Dconst.D1, &Dconst.D2};
-    uint8_t vec_mask[] = {D1_MASK, D2_MASK};
+    uint8_t mode = ms5607.OSR_mode;
+
+    uint32_t* pt_Dconst[] = {&ms5607.Dconst.D1, &ms5607.Dconst.D2};
+    uint8_t vec_mask [] = {D1_MASK, D2_MASK};
 
     for (int i = 0; i < 2; i++) {
 
         //Create the command according to OSR_mode
-        int Command_D = convert(OSR_mode);
+        int Command_D = convert(mode);
         Command_D = (Command_D<<1) | vec_mask[i];
 
         //Create the buffer cmd/resp
@@ -139,8 +100,8 @@ int32_t ms5607_getPressure(i2c_device_t ms5607,uint8_t OSR_mode) {
         };
 
         //Transmit / receive system
-        i2c_transmit(ms5607, buffer_Dcommand);
-        i2c_receive(ms5607, buffer_Dresponse);
+        i2c_transmit(ms5607.device, buffer_Dcommand);
+        i2c_receive(ms5607.device, buffer_Dresponse);
 
         //Concatenate response values ".data[2]+.data[1]+.data[0]"
         uint32_t response = 0;
@@ -148,27 +109,60 @@ int32_t ms5607_getPressure(i2c_device_t ms5607,uint8_t OSR_mode) {
             response = response | (buffer_Dresponse.data[j]<<(8*j));
         }
 
-        //attach values to Dconst struct
+        //atach values to Dconst struct
         uint32_t *pt;
-        pt = pt_const_D[i];
+        pt = pt_Dconst[i];
         *pt = response;
 
     }
-    //END OF read D1 and D2
 
+
+    return 0;
+}
+
+uint8_t ms5607_init(ms5607_t ms5607, enum OSR_samples mode) {
+
+    // reset
+    error_t resetDevice = ms5607_reset(ms5607);
+
+    if (resetDevice.hasError) {
+        return resetDevice.hasError;
+    }
+
+    //Write OSR_mode
+    ms5607.OSR_mode = mode;
+
+    //read PROM (att PROM struct)
+    get_PROM(ms5607);
+
+    delay_ms(10);
+
+    return 0;
+}
+
+int32_t ms5607_getPressure(ms5607_t ms5607) {
+    int32_t T2, dT, TEMP  ; // compensação de segunda ordem
+    int64_t OFF, SENS, P, OFF2, SENS2, dT;
+
+    T2 = OFF2 = SENS2 = 0;
 
     // attach PROM values
-    uint16_t C1 = prom.C1;
-    uint16_t C2 = prom.C2;
-    uint16_t C3 = prom.C3;
-    uint16_t C4 = prom.C4;
-    uint16_t C5 = prom.C5;
-    uint16_t C6 = prom.C6;
+    uint16_t C1 = ms5607.prom.C1;
+    uint16_t C2 = ms5607.prom.C2;
+    uint16_t C3 = ms5607.prom.C3;
+    uint16_t C4 = ms5607.prom.C4;
+    uint16_t C5 = ms5607.prom.C5;
+    uint16_t C6 = ms5607.prom.C6;
+
+
+    //read D1 and D2 (att Dconst struct)
+    get_Dconst(ms5607);
 
     // attach D values
-    uint32_t D1 = Dconst.D1;
-    uint32_t D2 = Dconst.D2;
+    uint32_t D1 = ms5607.Dconst.D1;
+    uint32_t D2 = ms5607.Dconst.D2;
 
+    //Calculate Temperature
     dT = D2 - (C5<<8));
     TEMP = 2000 + dT * (C6>>23));
 
@@ -176,7 +170,6 @@ int32_t ms5607_getPressure(i2c_device_t ms5607,uint8_t OSR_mode) {
     SENS = (C1<<16) + ((C3 * dT)>>7));
 
     //Compensação de Segunda Ordem
-
     if (TEMP < 20) { //Low TEMP compensation
 
         T2 = (dT*dT)>>31;
