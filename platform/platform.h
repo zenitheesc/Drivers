@@ -55,9 +55,10 @@ MAKE_RESULT(int);
 #if STM32
 
 #elif ARDUINO
+#include "arch/platform_arduino.h"
 
-#elif ESP32
-
+#elif ESP_PLATFORM
+#include "arch/platform_esp32.h"
 #else
 
 // #include "arch/platform_debug.h"
