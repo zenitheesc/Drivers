@@ -171,11 +171,25 @@ typedef struct {
 
  - `spi_transceive`
 ```c
-error_t spi_transceive(spi_device_t device, uint8_t register_address,
-		buffer_view_t rx_buffer, buffer_view_t tx_buffer);
+error_t spi_transceive(spi_device_t device, buffer_view_t rx_buffer, 
+  buffer_view_t tx_buffer);
 ```
 
 Transceive (Transmit and Receive) via SPI
+
+ - `spi_transmit`
+```c
+error_t spi_transmit(spi_device_t device, buffer_view_t tx_buffer);
+```
+
+Transmit via SPI
+
+ - `spi_transceive`
+```c
+error_t spi_receive(spi_device_t device, buffer_view_t rx_buffer);
+```
+
+Receive via SPI
 ### UART
 
 #### Types
