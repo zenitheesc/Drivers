@@ -358,23 +358,30 @@ EXPORT result8_t uart_read8(uart_connection_t conn) {
  *
  */
 #ifdef HAL_ADC_MODULE_ENABLED
-typedef ADC_HandleTypeDef adc_t;
+typedef ADC_HandleTypeDef adc_handle_t;
+typedef struct {
+  adc_handle_t handle;
+  uint8_t bits;
+  float voltage_reference;
+} adc_t;
+
 EXPORT error_t adc_init(adc_t *adc) {
-  HAL_ADC_Start(adc);
+  HAL_ADC_Start(adc->handle);
   // Na CubeIDE está com um falso-positivo de erro sobre o ErrorCode, mas
   // compila sem errros
-  return adc->ErrorCode;
+  return adc->handle.ErrorCode;
 }
 
-EXPORT result16_t adc_read(adc_t *adc) {
-  result16_t out = {.hasError = 1, .value = 0xFF};
-  out.value = HAL_ADC_GetValue(adc);
-  out.hasError = adc->ErrorCode;
+EXPORT result_uint16_t adc_read(adc_t *adc) {
+  result_uint16_t out = {.hasError = 1, .value = 0xFF};
+  out.value = HAL_ADC_GetValue(adc->handle);
+  out.hasError = adc->handle.ErrorCode;
   return out;
 }
 
-EXPORT float adc_raw_to_voltage(const uint16_t value) {
-  const float volts_per_step = (3.3f - 0.f) / 4095.f;
+EXPORT float adc_raw_to_voltage(adc_t adc, uint16_t value) {
+  const float volts_per_step =
+      (adc.voltage_reference - 0.f) / ((1 << adc.bits) - 1);
   return volts_per_step * value;
 }
 
