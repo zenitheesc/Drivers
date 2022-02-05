@@ -52,14 +52,15 @@ MAKE_RESULT(int);
 
 /* SELECT IMPLEMENTATION */
 
-#if STM32
-
-#elif ARDUINO
+#if ARDUINO
 #include "arch/platform_arduino.h"
-
 #elif ESP_PLATFORM
 #include "arch/platform_esp32.h"
+#elif __x86_64
+#include "arch/platform_debug.h"
 #else
+#include "arch/stm32x/platform_stm32.h"
+#endif
 
 // #include "arch/platform_debug.h"
 
