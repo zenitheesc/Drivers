@@ -235,7 +235,7 @@ ADC initialization
 
  - `adc_read`
 ```c
-result16_t adc_read(adc_t* adc);
+result_uint16_t adc_read(adc_t* adc);
 ```
 ADC Read raw value
 
