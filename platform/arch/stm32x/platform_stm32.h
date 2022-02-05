@@ -27,62 +27,14 @@
  * eficientes para interrupts e dma
  */
 
-#ifndef INC_BSP_H_
-#define INC_BSP_H_
+#ifndef INC_PLATFORM_STM32_H_
+#define INC_PLATFORM_STM32_H_
 #include <stdint.h>
 #define EXPORT static inline
 
 #include "select_hal.h"
 #define TIMEOUT                                                                \
   HAL_MAX_DELAY // Tempo limite de transações da HAL em milisegundos
-
-/**
- * Define nossa enumeração de erros como a mesma da HAL
- * Isso define um padrão: 0 quando não há erros,
- * por isso na struct "resultXX_t" veja o uso comum na struct
- * "resultXX_t"
- */
-typedef HAL_StatusTypeDef error_t;
-
-/**
- * Agrupa em uma struct o ponteiro e tamanho de um buffer já existente
- * então o buffer deve ser criado antes e depois a buffer_view deve ser
- * construida:
- * 		uint8_t buffer[16] = { 0 };
- * 		buffer_view_t b_view = {
- * 			.data = &buffer,
- * 			.size = 16 // melhor ainda, usar sizeof(buffer)
- * 		}
- */
-typedef struct {
-  uint8_t *data;
-  int size;
-} buffer_view_t;
-
-/**
- * Agrupa o valor de uma operação de 16 bits e se teve algum erro
- * a semantica é de:
- * 	"Resultado tem erros implica result.hasError != 0"
- * então na hora de usar fica:
- *
- *	 	resultado = operação();
- * 		if(resultado.hasError){
- * 			cuida dos erros
- * 		}
- */
-typedef struct {
-  error_t hasError;
-  uint16_t value;
-} result16_t;
-
-/**
- * Agrupa o valor de uma operação de 8 bits e se teve algum erro
- * mais detalhes na result16_t
- */
-typedef struct {
-  error_t hasError;
-  uint8_t value;
-} result8_t;
 
 EXPORT void delay_ms(uint32_t time) { HAL_Delay(time); }
 
@@ -227,7 +179,7 @@ EXPORT void gpio_toggle(gpio_pin_t pin) {
  *
  *
  */
-#ifdef HAL_SPI_MODULE_ENABLED
+#if defined(HAL_SPI_MODULE_ENABLED)
 typedef SPI_HandleTypeDef spi_t;
 
 typedef struct {
@@ -235,74 +187,29 @@ typedef struct {
   gpio_pin_t pin;
 } spi_device_t;
 
-EXPORT error_t spi_readN(spi_device_t device, uint8_t register_address,
-                         buffer_view_t buffer_view) {
-
-  gpio_low(device.pin);
-  error_t error =
-      HAL_SPI_Receive(device.spi, buffer_view.data, buffer_view.size, TIMEOUT);
-  gpio_high(device.pin);
-  return error;
-}
-
-EXPORT result8_t spi_read8(spi_device_t device, uint8_t register_address) {
-
-  uint8_t buffer[1] = {0};
-  buffer_view_t view = {.data = buffer, .size = 1};
-  error_t error = spi_readN(device, register_address, view);
-  uint8_t value = buffer[0];
-  result8_t result = {.hasError = error, .value = value};
-  return result;
-}
-
-EXPORT result16_t spi_read16(spi_device_t device, uint8_t register_address) {
-
-  uint8_t buffer[2] = {0};
-  buffer_view_t view = {.data = buffer, .size = sizeof(buffer)};
-  error_t error = spi_readN(device, register_address, view);
-  uint16_t value = (buffer[0] << 8) | buffer[1];
-  result16_t result = {.hasError = error, .value = value};
-  return result;
-}
-
-EXPORT error_t spi_writeN(spi_device_t device, uint8_t register_address,
-                          buffer_view_t buffer_view) {
-  gpio_low(device.pin);
-  error_t error =
-      HAL_SPI_Receive(device.spi, buffer_view.data, buffer_view.size, TIMEOUT);
-  gpio_high(device.pin);
-  return error;
-}
-
-EXPORT error_t spi_write8(spi_device_t device, uint8_t register_address,
-                          uint8_t value) {
-  uint8_t buffer[1] = {value};
-  buffer_view_t view = {.data = buffer, .size = 1};
-  return spi_writeN(device, register_address, view);
-}
-EXPORT error_t spi_write16(spi_device_t device, uint8_t register_address,
-                           uint16_t value) {
-  uint8_t buffer[2] = {0};
-  buffer[0] = (value & 0xFF00) >> 8;
-  buffer[1] = (uint8_t)value;
-  buffer_view_t view = {.data = buffer, .size = sizeof(buffer)};
-  return spi_writeN(device, register_address, view);
-}
-
-// TODO: Implement transceive
-EXPORT error_t spi_transceive(spi_device_t device, uint8_t register_address,
-                              buffer_view_t rx_buffer,
+EXPORT error_t spi_transceive(spi_device_t device, buffer_view_t rx_buffer,
                               buffer_view_t tx_buffer) {
 
   if (tx_buffer.size != rx_buffer.size) {
     return 1;
   }
-  gpio_low(device.pin);
   error_t error = HAL_SPI_TransmitReceive(
       device.spi, tx_buffer.data, rx_buffer.data, tx_buffer.size, TIMEOUT);
-  gpio_high(device.pin);
   return error;
 }
+
+EXPORT error_t spi_receive(spi_device_t device, buffer_view_t buffer_view) {
+  error_t error =
+      HAL_SPI_Receive(device.spi, buffer_view.data, buffer_view.size, TIMEOUT);
+  return error;
+}
+
+EXPORT error_t spi_transmit(spi_device_t device, buffer_view_t buffer_view) {
+  error_t error =
+      HAL_SPI_Transmit(device.spi, buffer_view.data, buffer_view.size, TIMEOUT);
+  return error;
+}
+
 #endif
 
 /***
@@ -334,31 +241,10 @@ EXPORT error_t uart_readN(uart_connection_t conn, buffer_view_t buffer) {
   return HAL_UART_Receive(conn.uart, buffer.data, buffer.size, 1000);
 }
 
-EXPORT result8_t uart_read8(uart_connection_t conn) {
-  uint8_t buffer[1] = {0};
-  buffer_view_t view = {.data = buffer, .size = 1};
-  result8_t result = {.hasError = 1, .value = 0};
-  result.hasError = uart_readN(conn, view);
-  result.value = view.data[0];
-  return result;
-}
-
 #endif
-
-/***
- * MODULO ADC
- *
- *
- *
- *
- *
- *
- *
- *
- *
- */
+******* /
 #ifdef HAL_ADC_MODULE_ENABLED
-typedef ADC_HandleTypeDef adc_handle_t;
+    typedef ADC_HandleTypeDef adc_handle_t;
 typedef struct {
   adc_handle_t handle;
   uint8_t bits;
