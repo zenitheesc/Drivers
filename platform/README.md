@@ -210,11 +210,20 @@ Transmit bytes via UART
 ### ADC
 
 #### Types
- - `adc_t`
+ - `adc_handle_t`
 ```c
-typedef <ADC_Type> adc_t;
+typedef <ADC_Type> adc_handle_t;
 ```
 ADC Channel Type
+- `adc_t`
+```c
+typedef struct {
+  adc_handle_t handle;
+  uint8_t bits;
+  float voltage_reference;
+} adc_t;
+```
+ADC Type
 
 #### Functions
 
@@ -232,7 +241,7 @@ ADC Read raw value
 
  - `adc_raw_to_voltage`
 ```c
-float adc_raw_to_voltage(const uint16_t value);
+float adc_raw_to_voltage(adc_t adc, const uint16_t value);
 ```
 
 ADC conversion to volts.
