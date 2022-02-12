@@ -1,7 +1,7 @@
 //
 // Created by gusta on 14/11/2021.
 //
-// * Em I2C *
+// * I2C *
 
 #ifndef MS5607_H
 #define MS5607_H
@@ -57,10 +57,9 @@ int32_t ms5607_getPressure(ms5607_t* ms5607);
 #define I2C_ADR        ((uint8_t) (111011Cx))
 
 //    REGISTER_NAME       COMMAND(BIN)
-#define PROM_MASK      ((uint8_t) (0b10100000))   // os bits 1, 2 e 3 representam o coef.
-// que o PROM retornará ex. 1010 001 0 retornará o C1
+#define PROM_MASK      ((uint8_t) (0b10100000))   // Bits 1, 2 e 3 represents the coef.
 
-#define D1_MASK        ((uint8_t) (0b01000000))   //os bits 1, 2 e 3 representam o OSR_mode
+#define D1_MASK        ((uint8_t) (0b01000000))   // Bits 1, 2 e 3 represents the OSR_mode
 #define D2_MASK        ((uint8_t) (0b01010000))
 
 #define RESET_CMD      ((uint8_t) (0b00011110))
