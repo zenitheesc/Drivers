@@ -9,18 +9,6 @@
 #include "bsp.h"
 #include <stdint.h>
 
-//    REGISTER_NAME       ADDRESS(HEX)
-#define I2C_ADR        ((uint8_t) (111011Cx))
-
-//    REGISTER_NAME       COMMAND(BIN)
-#define PROM_MASK      ((uint8_t) (10100000))   // os bits 1, 2 e 3 representam o coef.
-                                                // que o PROM retornará ex. 1010 001 0 retornará o C1
-
-#define D1_MASK        ((uint8_t) (01000000))   //os bits 1, 2 e 3 representam o OSR_mode
-#define D2_MASK        ((uint8_t) (01010000))
-
-#define RESET_CMD      ((uint8_t) (00011110))
-
 enum OSR_samples {mode_1, mode_2, mode_3, mode_4, mode_5};
 
 // OSR_Mode: (Same for D1 and D2)
@@ -55,6 +43,27 @@ typedef struct {
     
 } ms5607_t;
 
+error_t ms5607_reset(ms5607_t* ms5607);
+uint8_t get_PROM(ms5607_t* ms5607);
+uint8_t get_Dconst(ms5607_t* ms5607);
+uint8_t ms5607_init(ms5607_t* ms5607, enum OSR_samples mode);
+int32_t ms5607_getPressure(ms5607_t* ms5607);
+
+
+#define QNT_PROM_CONST ((uint8_t) (6))
+#define QNT_DCONST     ((uint8_t) (2))
+
+//    REGISTER_NAME       ADDRESS(HEX)
+#define I2C_ADR        ((uint8_t) (111011Cx))
+
+//    REGISTER_NAME       COMMAND(BIN)
+#define PROM_MASK      ((uint8_t) (0b10100000))   // os bits 1, 2 e 3 representam o coef.
+// que o PROM retornará ex. 1010 001 0 retornará o C1
+
+#define D1_MASK        ((uint8_t) (0b01000000))   //os bits 1, 2 e 3 representam o OSR_mode
+#define D2_MASK        ((uint8_t) (0b01010000))
+
+#define RESET_CMD      ((uint8_t) (0b00011110))
 
 
 
