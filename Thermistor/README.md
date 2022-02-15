@@ -1,4 +1,4 @@
-# tjermistor
+# thermistor
 
 ## Propósito
  Pra que serve o sensor?
