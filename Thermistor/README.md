@@ -1,4 +1,4 @@
-# INA219
+# tjermistor
 
 ## Propósito
  Pra que serve o sensor?
