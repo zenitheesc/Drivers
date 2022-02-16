@@ -1,7 +1,7 @@
 #ifndef STM_HAL_H
 #define STM_HAL_H
 
-#if defined STM32F103xx
+#if defined STM32F103xB
 #include "stm32f1xx_hal.h"
 
 #elif defined STM32F030xx
