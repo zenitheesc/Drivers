@@ -65,5 +65,3 @@ MAKE_RESULT(int);
 // #include "arch/platform_debug.h"
 
 #endif
-
-#endif
