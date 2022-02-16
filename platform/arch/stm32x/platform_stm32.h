@@ -238,4 +238,4 @@ EXPORT float adc_raw_to_voltage(adc_t adc, uint16_t value) {
  *
  */
 
-#endif /* INC_BSP_H_ */
+#endif /* INC_PLATFORM_STM32_H_ */
