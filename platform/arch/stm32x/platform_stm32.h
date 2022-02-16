@@ -87,66 +87,6 @@ EXPORT error_t i2c_receive(i2c_device_t device, buffer_view_t buffer) {
                                 buffer.size, TIMEOUT);
 }
 
-/**
- * Le N bytes do escravo i2c, onde N é o size do buffer_view que é passado.
- * Os valores lidos serão escritos no buffer apontado pelo buffer_view
- */
-EXPORT error_t i2c_readN(i2c_device_t device, uint8_t register_address,
-                         buffer_view_t buffer_view) {
-  return HAL_I2C_Mem_Read(device.i2c, (device.address << 1), register_address,
-                          I2C_MEMADD_SIZE_8BIT, buffer_view.data,
-                          buffer_view.size, TIMEOUT);
-}
-/**
- * Le um byte do escravo i2c
- */
-EXPORT result8_t i2c_read8(i2c_device_t device, uint8_t register_address) {
-
-  uint8_t buffer[1] = {0};
-  buffer_view_t view = {.data = buffer, .size = 1};
-  error_t error = i2c_readN(device, register_address, view);
-  uint8_t value = buffer[0];
-  result8_t result = {.hasError = error, .value = value};
-  return result;
-}
-/**
- * Le dois bytes do escravo i2c, retorna como u16
- */
-EXPORT result16_t i2c_read16(i2c_device_t device, uint8_t register_address) {
-
-  uint8_t buffer[2] = {0};
-  buffer_view_t view = {.data = buffer, .size = sizeof(buffer)};
-  error_t error = i2c_readN(device, register_address, view);
-  uint16_t value = (buffer[0] << 8) | buffer[1];
-  result16_t result = {.hasError = error, .value = value};
-  return result;
-}
-
-EXPORT error_t i2c_writeN(i2c_device_t device, uint8_t register_address,
-                          buffer_view_t buffer_view) {
-
-  return HAL_I2C_Mem_Write(device.i2c, (device.address << 1), register_address,
-                           I2C_MEMADD_SIZE_8BIT, buffer_view.data,
-                           buffer_view.size, TIMEOUT);
-}
-
-EXPORT error_t i2c_write8(i2c_device_t device, uint8_t register_address,
-                          uint8_t value) {
-  uint8_t buffer[1] = {value};
-  buffer_view_t view = {.data = buffer, .size = 1};
-  return i2c_writeN(device, register_address, view);
-}
-
-EXPORT error_t i2c_write16(i2c_device_t device, uint8_t register_address,
-                           uint16_t value) {
-
-  uint8_t buffer[2] = {0};
-  buffer[0] = (uint8_t)(value & 0xFF00) >> 8;
-  buffer[1] = (uint8_t)value;
-  buffer_view_t view = {.data = buffer, .size = sizeof(buffer)};
-  return i2c_writeN(device, register_address, view);
-}
-
 #endif
 
 #ifdef HAL_GPIO_MODULE_ENABLED
@@ -242,9 +182,21 @@ EXPORT error_t uart_readN(uart_connection_t conn, buffer_view_t buffer) {
 }
 
 #endif
-******* /
+
+/***
+ * MODULO ADC
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
 #ifdef HAL_ADC_MODULE_ENABLED
-    typedef ADC_HandleTypeDef adc_handle_t;
+typedef ADC_HandleTypeDef adc_handle_t;
 typedef struct {
   adc_handle_t handle;
   uint8_t bits;
