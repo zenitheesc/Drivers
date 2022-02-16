@@ -1,3 +1,17 @@
+/**
+ * @file select_hal.h
+ * @author Leonardo Celente (@leocelente)
+ *
+ * @version 0.1
+ * @date 2022-02-16
+ *
+ * @copyright Copyright (c) 2022
+ *
+ * Esse arquivo, seleciona entre os arquivos gerados da HAL
+ * quando a CubeIDE gera código, ela utiliza um arquivo associado a
+ * familia do STM32. Além disso todos os arquivos compilados tem uma macro
+ * definida indicando essa familia.
+ */
 #ifndef STM_HAL_H
 #define STM_HAL_H
 
