@@ -159,8 +159,16 @@ EXPORT error_t uart_receive(uart_connection_t conn, buffer_view_t buffer) {
 #undef CURRENT_MODULE
 #define CURRENT_MODULE "ADC"
 
-typedef int adc_t;
-static adc_t fake_adc = 1;
+typedef int adc_handle_t;
+typedef struct {
+  adc_handle_t *handle;
+  uint8_t bits;
+  float voltage_reference;
+} adc_t;
+
+static int fake_adc_handle = 1;
+static adc_t fake_adc = {
+    .handle = &fake_adc_handle, .bits = 12, .voltage_reference = 3.3};
 static uint16_t _adc_value = 1023;
 
 EXPORT error_t adc_init(adc_t *adc) {
@@ -174,8 +182,9 @@ EXPORT result_uint16_t adc_read(adc_t *adc) {
   return out;
 }
 
-EXPORT float adc_raw_to_voltage(uint16_t value) {
-  float volts_per_step = (3.3f - 0.f) / 4095.f;
+EXPORT float adc_raw_to_voltage(adc_t adc, uint16_t value) {
+  const float volts_per_step =
+      (adc.voltage_reference - 0.f) / ((1 << adc.bits) - 1);
   return volts_per_step * value;
 }
 
