@@ -12,19 +12,18 @@
  *  	Se a biblioteca usa diretamente a HAL, o código
  *  	vai precisar se mudado para usar em outro microcontrolador,
  *  	sistema (eg BeagleBone) ou mesmo uma alternativa a HAL (eg: LL).
- *  	E a HAL tem muito código repetitivo para funções simples,
- *  	usar essas funções deixa o código mais limpo e evita erros bobos.
  *
- *  	Cada arquivo bsp_xxxx.h estaria então relacionado com uma plataforma
- *  	BSP é sigla para Board Support Package ("Pacode de Suporte para Placa")
+ *  	Cada arquivo platform_xxxx.h estaria então relacionado com uma
+ * plataforma
  *
- *  	Essa é do STM32 com HAL*, poderia ter uma para Arduino (bsp_arduino.h)
- * que usaria as Wire e SPI. Poderia ter uma linux embarcado (bsp_linux.h) que
- * envolveria os /dev/i2c0 /dev/spi0 etc e a biblioteca não iria precisar de
- * mudanças para ser utilizada em qualquer uma dessas plataformas
+ *  	Essa é do STM32 com HAL*, poderia ter uma para Arduino
+ * (platform_arduino.h) que usaria as Wire e SPI. Poderia ter uma linux
+ * embarcado (platform_linux.h) que envolveria os /dev/i2c0 /dev/spi0 etc e a
+ * biblioteca não iria precisar de mudanças para ser utilizada em qualquer uma
+ * dessas plataformas
  *
  *  	* somente em blocking mode, ainda tenho que pensar em abstrações
- * eficientes para interrupts e dma
+ * eficientes para interrupts e DMA
  */
 
 #ifndef INC_PLATFORM_STM32_H_
