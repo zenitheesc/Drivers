@@ -198,7 +198,7 @@ EXPORT error_t uart_readN(uart_connection_t conn, buffer_view_t buffer) {
 #ifdef HAL_ADC_MODULE_ENABLED
 typedef ADC_HandleTypeDef adc_handle_t;
 typedef struct {
-  adc_handle_t handle;
+  adc_handle_t *handle;
   uint8_t bits;
   float voltage_reference;
 } adc_t;
