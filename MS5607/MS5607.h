@@ -6,7 +6,7 @@
 #ifndef MS5607_H
 #define MS5607_H
 
-#include "bsp.h"
+#include "platform/platform.h"
 #include <stdint.h>
 
 enum OSR_samples {mode_1, mode_2, mode_3, mode_4, mode_5};
@@ -33,28 +33,29 @@ typedef struct {
     uint32_t D1; // Digital pressure value
     uint32_t D2; // Digital temperature value
 
-} Dconst_t;
+} DValue_t;
 
 typedef struct {
     i2c_device_t device;
     prom_t prom;
-    Dconst_t Dconst;
+    DValue_t DValue;
     uint8_t OSR_mode; // Quantity of samples for conversion (ADC)
     
 } ms5607_t;
 
-error_t ms5607_reset(ms5607_t* ms5607);
-uint8_t get_PROM(ms5607_t* ms5607);
-uint8_t get_Dconst(ms5607_t* ms5607);
-uint8_t ms5607_init(ms5607_t* ms5607, enum OSR_samples mode);
+
+error_t ms5607_init(ms5607_t* ms5607, enum OSR_samples mode);
 int32_t ms5607_getPressure(ms5607_t* ms5607);
+int32_t ms5607_getTemperature(ms5607_t* ms5607);
 
 
 #define QNT_PROM_CONST ((uint8_t) (6))
-#define QNT_DCONST     ((uint8_t) (2))
+#define QNT_DValue     ((uint8_t) (2))
 
-//    REGISTER_NAME       ADDRESS(HEX)
-#define I2C_ADR        ((uint8_t) (111011Cx))
+//    REGISTER_NAME       ADDRESS(BIN)
+#define I2C_ADR        ((uint8_t) (0b11101100))
+#define I2S_ADR_ALT	   ((uint8_t) (0b11101111))
+
 
 //    REGISTER_NAME       COMMAND(BIN)
 #define PROM_MASK      ((uint8_t) (0b10100000))   // Bits 1, 2 e 3 represents the coef.
@@ -63,7 +64,6 @@ int32_t ms5607_getPressure(ms5607_t* ms5607);
 #define D2_MASK        ((uint8_t) (0b01010000))
 
 #define RESET_CMD      ((uint8_t) (0b00011110))
-
 
 
 #endif //MS5607_H
