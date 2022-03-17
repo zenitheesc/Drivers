@@ -118,7 +118,7 @@ EXPORT void gpio_toggle(gpio_pin_t pin) {
  *
  *
  */
-#if defined(HAL_SPI_MODULE_ENABLED)
+#ifdef HAL_SPI_MODULE_ENABLED
 typedef SPI_HandleTypeDef spi_t;
 
 typedef struct {
