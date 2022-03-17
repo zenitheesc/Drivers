@@ -27,7 +27,7 @@ printf("Thermistor Resistance: %.f\r\n", R);
 
 ## Documentação
 
-Para determinar a resistência externa $$R_ext$$ utilize a formula do datasheet
+Para determinar a resistência externa Rext utilize a formula do datasheet
 
 ![relação datasheet](https://i.imgur.com/9JAlXYt.png)
 
