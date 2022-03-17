@@ -206,13 +206,13 @@ EXPORT error_t adc_init(adc_t *adc) {
   HAL_ADC_Start(adc->handle);
   // Na CubeIDE está com um falso-positivo de erro sobre o ErrorCode, mas
   // compila sem errros
-  return adc->handle.ErrorCode;
+  return adc->handle->ErrorCode;
 }
 
 EXPORT result_uint16_t adc_read(adc_t *adc) {
   result_uint16_t out = {.hasError = 1, .value = 0xFF};
   out.value = HAL_ADC_GetValue(adc->handle);
-  out.hasError = adc->handle.ErrorCode;
+  out.hasError = adc->handle->ErrorCode;
   return out;
 }
 
