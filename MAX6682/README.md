@@ -22,7 +22,7 @@ if(result.hasError){
   printf("Invalid Resistance\r\n");
 }
 float R = result.value;
-printf("Thermistor Resistance: %.f\r\n", R);
+printf("Thermistor Resistance: %.2f\r\n", R);
 ```
 
 ## Documentação
