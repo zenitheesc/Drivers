@@ -22,16 +22,14 @@ static uint8_t getPROM(ms5607_t* ms5607) {
 	//Needs to start on 1 (Add 0 reserved for manufacturer)
 	for (int i = 1; i <= QNT_PROM_CONST; i++) {
 
-		int const_ADR = i;
-
 		//Found specific address to PROM
-		uint8_t CMD_PROM = PROM_MASK | (const_ADR << 1);
+		uint8_t comman_PROM_i = PROM_MASK | (i << 1);
 
 		//Create the array (command/response)
 		uint8_t prom_response[2] = { 0 };
 
 		//Create the buffer
-		buffer_view_t buffer_promCommand = { .data = &CMD_PROM, .size = 1 };
+		buffer_view_t buffer_promCommand = { .data = &comman_PROM_i, .size = 1 };
 		buffer_view_t buffer_promResponse = { .data = prom_response, .size =
 				sizeof(prom_response) };
 
@@ -40,8 +38,7 @@ static uint8_t getPROM(ms5607_t* ms5607) {
 		i2c_receive(ms5607->device, buffer_promResponse);
 
 		//Concatenate response ".data[1]+.data[0]"
-		uint16_t response = (buffer_promResponse.data[1] << 8);
-		response = response | buffer_promResponse.data[0];
+		uint16_t response = (buffer_promResponse.data[1] << 8) | (buffer_promResponse.data[0]);
 
 		//Write in "prom_t" struct
 		*(prom_pt[i]) = response;
@@ -53,19 +50,18 @@ static uint8_t getPROM(ms5607_t* ms5607) {
 static uint8_t getDigitalValue(ms5607_t* ms5607) {
 
 	uint8_t mode = ms5607->OSR_mode;
-
-	uint32_t *pt_DValue[] = { &ms5607->DValue.D1, &ms5607->DValue.D2 };
+	uint32_t buffer_DValue[2] = {0};
 	uint8_t vec_mask[] = { D1_MASK, D2_MASK };
 
-	for (int i = 0; i < QNT_DValue; i++) {
+	for (int i = 0; i < QNT_DVALUE; i++) {
 
 		//Create the command according to OSR_mode
-		uint8_t Command_D = (mode << 1) | vec_mask[i];
+		uint8_t command_D = vec_mask[i] | (mode << 1);
 
 		//Create the buffer cmd/resp
 		uint8_t buffer_Dresp[3] = { 0 };
 
-		buffer_view_t buffer_Dcommand = { .data = &Command_D, .size = 1};
+		buffer_view_t buffer_Dcommand = { .data = &command_D, .size = 1};
 		buffer_view_t buffer_Dresponse = { .data = buffer_Dresp, .size =
 				sizeof(buffer_Dresp) };
 
@@ -79,9 +75,13 @@ static uint8_t getDigitalValue(ms5607_t* ms5607) {
 			response = response | (buffer_Dresponse.data[j] << (8 * j));
 		}
 
-		//Attach values to DValue struct
-		*(pt_DValue[i]) = response;
+		//Attach values to DValue buffer
+		buffer_DValue[i] = response;
 	}
+
+	//Attach Dvalue buffer to struct
+	ms5607->DValue.D1 = buffer_DValue[0];
+	ms5607->DValue.D2 = buffer_DValue[1];
 
 	return 0;
 }
@@ -107,9 +107,6 @@ error_t ms5607_init(ms5607_t* ms5607, enum OSR_samples mode) {
 }
 
 int32_t ms5607_getTemperature(ms5607_t* ms5607) {
-
-	//Read PROM (att PROM struct)
-	getPROM(ms5607);
 
 	//Attach PROM values
 	uint16_t C5 = ms5607->prom.C5;

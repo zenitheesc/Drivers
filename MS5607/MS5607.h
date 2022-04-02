@@ -50,7 +50,7 @@ int32_t ms5607_getTemperature(ms5607_t* ms5607);
 
 
 #define QNT_PROM_CONST ((uint8_t) (6))
-#define QNT_DValue     ((uint8_t) (2))
+#define QNT_DVALUE     ((uint8_t) (2))
 
 //    REGISTER_NAME       ADDRESS(BIN)
 #define I2C_ADR        ((uint8_t) (0b11101100))
