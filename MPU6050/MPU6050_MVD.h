@@ -8,7 +8,7 @@
 #ifndef INC_MPU6050_MVD_H_
 #define INC_MPU6050_MVD_H_
 
-#include "bsp.h"
+#include "platform/platform.h"
 
 
 /* REGISTRADORES */
@@ -23,7 +23,6 @@
 #define MPU_FIFO_EN			(uint8_t)(0x23) //Default desabilitado
 #define MPU_INT_ENABLE		(uint8_t)(0x38) //Default desabilitado
 #define MPU_INT_STATUS		(uint8_t)(0x3A) //Read only
-#define MPU_PWR_MGMT_1		(uint8_t)(0x6B) //Manter desabilitado
 
 // Registradores de leitura dos dados
 // Acelerômetro
@@ -135,25 +134,12 @@ error_t MPU6050_smprt(MPU6050_t mpu);
 error_t MPU6050_config(MPU6050_t mpu);
 error_t MPU6050_gyro_config(MPU6050_t mpu);
 error_t MPU6050_accel_config(MPU6050_t mpu);
-error_t MPU6050_power(MPU6050_t mpu);
 
 //Função de configuração geral, aplica todas as configs
 error_t MPU6050_init(MPU6050_t mpu);
 
 //Função para leitura burst-read
 error_t MPU6050_measure(MPU6050_t mpu, MPU6050_values_t *medida);
-
-/* Constantes */
-
-#define SCALE_SHIFT		(int)(3)
-#define SCALE_INV_A		(int)(3)
-#define SCALE_INV_G		(int)(6)
-#define ACCEL_BIT		(int)(11)
-#define GYRO_BIT		(int)(11)
-#define BIT_DIV			(int)(1)
-#define UNIT_DIV		(float)(1000)
-#define TMP_DIV_CONST	(int)(340)
-#define TMP_SUM_CONST	(float)(36.53)
 
 
 
