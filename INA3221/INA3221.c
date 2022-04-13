@@ -4,6 +4,26 @@
 
 #include "INA3221.h"
 
+static result_uint16_t read(ina3221_t ina, uint8_t addr) {
+  uint8_t tx = addr;
+  buffer_view_t tx_v = {.size = sizeof(tx), .data = &tx};
+  error_t e = i2c_transmit(ina.device, tx);
+
+  uint8_t rx[2] = {0};
+  buffer_view_t rx_v = {.size = sizeof(rx), .data = rx};
+  e |= i2c_receive(ina.device, rx);
+
+  uint16_t value = (rx[1] << 8) | (rx[0]);
+  result_uint16_t res = {.hasError = e, .value = value};
+  return res;
+}
+
+static error_t write(ina3221_t ina, uint8_t addr, uint16_t value) {
+  uint8_t tx[] = {addr, value << 8, value};
+  buffer_view_t view = {.size = sizeof(tx), .data = tx};
+  return i2c_transmit(ina.device, tx);
+}
+
 static int16_t to_value(uint16_t raw_value) {
 
 	raw_value >>= 3;
