@@ -6,8 +6,7 @@
 #ifndef OBJ_C_INA3221_H
 #define OBJ_C_INA3221_H
 
-#include "bsp.h"
-#include <stdint.h>
+#include "platform/platform.h"
 #include <stdbool.h>
 
 //      REGISTER_NAME     ADDRESS(HEX)
