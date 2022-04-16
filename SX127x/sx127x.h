@@ -155,5 +155,19 @@ void onTxDone(void);
 #define FSK_REG_LNA	 					     0x0C	// Low-Noise Amplifier Configuration
 
 
+#define FSK_REG_SEQ_CONFIG_1                 0x36U
+#define FSK_REG_SEQ_CONFIG_2                 0x37U
+#define FSK_REG_TIMER_RESOL                  0x38U
+#define FSK_REG_TIMER_1_COEF                 0x39U
+#define FSK_REG_TIMER_2_COEF                 0x3AU
+
+
+#define FSK_REG_IRQ_FLAGS1                   0x3EU
+#define FSK_REG_IRQ_FLAGS2                   0x3FU
+#define FSK_REG_FIFO_THRESH                  0x35U
+
+
+#define FSK_REG_PREAMBLE_LEN_MSB			 0x25	// Preamble Length Configuration MSB
+#define FSK_REG_PREAMBLE_LEN_LSB			 0x26 	// Preamble Length Configuration LSB
 
 #endif /* INC_SX127X_H_ */
