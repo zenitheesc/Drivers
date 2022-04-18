@@ -48,7 +48,7 @@ EXPORT void delay_ms(uint32_t time) { delay(time); }
  *
  *
  */
-#ifdef HAL_I2C_MODULE_ENABLED //Macro para arduino?
+//#ifdef HAL_I2C_MODULE_ENABLED //Macro para detectar uso da wire
 
 /**
  * Agrupa a interface i2c e o endereço do escravo
@@ -98,4 +98,43 @@ EXPORT error_t i2c_receive(i2c_device_t device, buffer_view_t buffer) {
   return buffer;
 }
 
-#endif
+//#endif
+
+/**
+ * Essa macro só é definida se o GPIO for ser utilizado
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
+//#ifdef HAL_GPIO_MODULE_ENABLED //macro para detectar uso da gpio
+
+/**
+ * Agrupa a interface gpio e o pino
+ * Usado para portabilidade com outras platform
+ * 
+ */
+typedef struct {
+  uint16_t pin;
+} gpio_pin_t;
+
+
+EXPORT void gpio_low(gpio_pin_t pin) {
+  pinMode(pin.pin, OUTPUT);
+  digitalWrite(pin.pin, LOW);
+}
+
+EXPORT void gpio_high(gpio_pin_t pin) {
+  pinMode(pin.pin, OUTPUT);
+  digitalWrite(pin.pin, HIGH);
+}
+
+EXPORT void gpio_toggle(gpio_pin_t pin) {
+  pinMode(pin.pin, OUTPUT);
+  digitalWrite(pin.pin, !digitalRead(pin.pin));
+}
+//#endif
