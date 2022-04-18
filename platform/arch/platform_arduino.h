@@ -26,12 +26,76 @@
 #ifndef INC_PLATFORM_ARDUINO_H_
 #define INC_PLATFORM_ARDUINO_H_
 #include <stdint.h>
-#define EXPORT static inline
 #include <arduino.h>
+#define EXPORT static inline
 
 
-#define ARDUINO_MAX_DELAY 1000 //Delay padrão para comunicação em arduino
+
+#define ARDUINO_MAX_DELAY 1000000 //Delay padrão em us para comunicação em arduino
 #define TIMEOUT                                                                \
-  ARDUINO_MAX_DELAY // Tempo limite de transações da AVR em milisegundos
+  ARDUINO_MAX_DELAY // Tempo limite de transações da arduino em microsegundos
 
 EXPORT void delay_ms(uint32_t time) { delay(time); }
+
+/**
+ * Essa macro só é definida se o I2C for ser utilizado
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
+#ifdef HAL_I2C_MODULE_ENABLED //Macro para arduino?
+
+/**
+ * Agrupa a interface i2c e o endereço do escravo
+ * address: Endereço NÃO shiftado do escravo
+ * i2c_device_t = {
+ * 		.address = 0x40
+ * }
+ */
+typedef struct {
+  uint8_t address;
+} i2c_device_t;
+
+
+/**
+ * Inicializa a biblioteca wire e acessa o bus 12c como controlador
+ * Configura o timeout das funções da wire
+ * Em caso de timeout, efetua reset do hardware do i2c
+ * O timeout deve ser configurado testando se há possibilidade de configurá-lo na board a ser utilizada,
+ * A macro WIRE_HAS_TIMEOUT testa se a versao do wire possui configuração de timeout
+ */
+Wire.begin();
+#if defined(WIRE_HAS_TIMEOUT)
+    Wire.setWireTimeout(TIMEOUT, true);
+#endif
+
+/***
+ * Acesso direto, transmite no barramento do I2C, sem enviar
+ * endereço de registrador
+ */
+EXPORT error_t i2c_transmit(i2c_device_t device, buffer_view_t buffer) {
+  Wire.beginTransmission(device.address);
+  transmit = Wire.write(buffer.data, buffer.size);
+  Wire.endTransmission();
+  return Transmit;
+}
+/***
+ * Acesso direto, lê o que estiver no barramento do I2C, sem enviar
+ * endereço de registrador
+ */
+EXPORT error_t i2c_receive(i2c_device_t device, buffer_view_t buffer) {
+  Wire.requestFrom(device.address, buffer.size);
+  buffer_position = 0;
+  while(Wire.available() && n < buffer.size){
+      buffer.data[buffer_position] = Wire.read();
+      buffer_position++;
+  }
+  return buffer;
+}
+
+#endif
