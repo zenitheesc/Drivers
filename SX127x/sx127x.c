@@ -15,8 +15,8 @@
 volatile uint8_t dio0_flag = 0;
 
 static void maximize_tx(radio_t *radio);
-static void set_power(radio_t radio, uint8_t);
-
+static void set_power(radio_t *radio, uint8_t);
+static void radio_register(radio_t *radio);
 /**
  * HAL
  */
@@ -24,16 +24,16 @@ static void set_power(radio_t radio, uint8_t);
 /**
  * Read register
  */
-static uint8_t reg_read(radio_t radio, uint8_t reg) {
+static uint8_t reg_read(radio_t *radio, uint8_t reg) {
 
 	buffer_view_t addr_v = { .size = 1, .data = &reg };
 	uint8_t r = 0;
 	buffer_view_t response_v = { .size = 1, .data = &r };
 
-	gpio_low(radio.dev.pin);
-	error_t e = spi_transmit(radio.dev, addr_v);
-	e |= spi_receive(radio.dev, response_v);
-	gpio_high(radio.dev.pin);
+	gpio_low(radio->dev.pin);
+	error_t e = spi_transmit(radio->dev, addr_v);
+	e |= spi_receive(radio->dev, response_v);
+	gpio_high(radio->dev.pin);
 
 	if (e) {
 		onError(FAIL_READ);
@@ -46,7 +46,7 @@ static uint8_t reg_read(radio_t radio, uint8_t reg) {
 /**
  * Write to register, except FIFO
  */
-static void reg_write(radio_t radio, uint8_t reg, uint8_t value) {
+static void reg_write(radio_t *radio, uint8_t reg, uint8_t value) {
 	if (reg == FIFO) {
 		// use dedicated function to write to fifo
 		onError(FAIL_WRITE);
@@ -56,9 +56,9 @@ static void reg_write(radio_t radio, uint8_t reg, uint8_t value) {
 	uint8_t cmd[] = { reg | WRITE_BIT, value };
 	buffer_view_t cmd_v = { .size = 2, .data = cmd };
 
-	gpio_low(radio.dev.pin);
-	error_t error = spi_transmit(radio.dev, cmd_v);
-	gpio_high(radio.dev.pin);
+	gpio_low(radio->dev.pin);
+	error_t error = spi_transmit(radio->dev, cmd_v);
+	gpio_high(radio->dev.pin);
 
 	if (error) {
 		onError(FAIL_WRITE);
@@ -79,7 +79,7 @@ static void reg_write(radio_t radio, uint8_t reg, uint8_t value) {
 /**
  * Write buffer to FIFO
  */
-static void fifo_write(radio_t radio, buffer_view_t packet) {
+static void fifo_write(radio_t *radio, buffer_view_t packet) {
 	printf("Writing to FIFO:\r\n[ ");
 	for (int i = 0; i < packet.size; ++i) {
 		printf(" 0x%.2X", packet.data[i]);
@@ -92,10 +92,10 @@ static void fifo_write(radio_t radio, buffer_view_t packet) {
 	uint8_t addr = FIFO | WRITE_BIT;
 	buffer_view_t addr_v = { .size = 1, .data = &addr };
 
-	gpio_low(radio.dev.pin);
-	error_t e = spi_transmit(radio.dev, addr_v);
-	e |= spi_transmit(radio.dev, packet);
-	gpio_high(radio.dev.pin);
+	gpio_low(radio->dev.pin);
+	error_t e = spi_transmit(radio->dev, addr_v);
+	e |= spi_transmit(radio->dev, packet);
+	gpio_high(radio->dev.pin);
 
 	if (e) {
 		onError(FAIL_WRITE);
@@ -106,44 +106,33 @@ static void fifo_write(radio_t radio, buffer_view_t packet) {
  * Set frequency to possible values
  * [F915MHz,F868MHz,F434MHz,F433MHz]
  */
-static void set_frequency(radio_t radio) {
-	uint8_t const high = radio.frequency >> 16;
-	uint8_t const mid = radio.frequency >> 8;
-	uint8_t const low = (uint8_t) radio.frequency;
-
-	switch (radio.frequency) {
-	case F433MHz:
-	case F434MHz:
-	case F868MHz:
-	default:
-	case F915MHz:
-		reg_write(radio, FREQ_HSB, high);
-		reg_write(radio, FREQ_MSB, mid);
-		reg_write(radio, FREQ_LSB, low);
-		break;
-	}
+static void set_frequency(radio_t *radio) {
+	reg_write(radio, FREQ_HSB, radio->frequency >> 16);
+	reg_write(radio, FREQ_MSB, radio->frequency >> 8);
+	reg_write(radio, FREQ_LSB, radio->frequency);
 }
+
 /**
  * Reset radio
  */
-static error_t reset(radio_t *radio) {
+static void reset(radio_t *radio) {
 	gpio_low(radio->reset);
 	delay_ms(30);
 	gpio_high(radio->reset);
 	delay_ms(30);
-	return OK;
 }
 
 /**
  * Set OpMode register,
  * takes in consideration current radio parameters
  */
-static void set_opmode(radio_t radio, mode_t mode) {
+static void set_opmode(radio_t *radio, mode_t mode) {
 	uint8_t op = reg_read(radio, OPMODE);
 	op &= ~0x0F;
-	op |= (radio.modulation == MOD_LORA) ? MODEM_LORA : MODEM_FSK;
+	op |= (radio->modulation == MOD_LORA) ? MODEM_LORA : MODEM_FSK;
 	op |= mode;
 	reg_write(radio, OPMODE, op);
+	delay_ms(5);
 }
 
 /**
@@ -152,41 +141,46 @@ static void set_opmode(radio_t radio, mode_t mode) {
  * FSK:
  */
 static void maximize_tx(radio_t *radio) {
-	set_power(*radio, 18); // for experimentation
+	set_power(radio, 18); // for experimentation
 
+	// Over Current Protection
 	uint8_t ocp_trim = (140 /*mA*/+ 30) / 10;
 	uint8_t val = (0x20 | (0x1F & ocp_trim));
-	reg_write(*radio, OCP, val);
+	reg_write(radio, OCP, val);
 
 	if (radio->modulation == MOD_LORA) {
 		// Spreading Factor
 		uint8_t sf = 11 << 4;
-		reg_write(*radio, MODEM_CONFIG_2, sf);
+		reg_write(radio, MODEM_CONFIG_2, sf);
 
 		// Bandwidth
-		uint8_t bw = BW_125K;
-		uint8_t modem_config_1 = reg_read(*radio, MODEM_CONFIG_1);
-		modem_config_1 &= 0x0F;
+		uint8_t bw = BW_31_25K;
+		uint8_t modem_config_1 = 0x00; // reg_read(*radio, MODEM_CONFIG_1);
 		modem_config_1 |= bw;
-		reg_write(*radio, MODEM_CONFIG_1, modem_config_1);
+		// Coding Rate
+		modem_config_1 |= 0b0010;
+		reg_write(radio, MODEM_CONFIG_1, modem_config_1);
+		// Low Data Rate Optimization
+		reg_write(radio, 0x26, 0b00001000);
+
 	} else {
 		// Bandwidth
-		uint8_t bw = reg_read(*radio, FSK_REG_RX_BW);
-		reg_write(*radio, FSK_REG_RX_BW, bw | FSK_BW_200_0_KHZ);
+		uint8_t bw = reg_read(radio, FSK_REG_RX_BW);
+		reg_write(radio, FSK_REG_RX_BW, bw | FSK_BW_200_0_KHZ);
 
 		// AFC (Automatic Frequency Correction ?)
-		uint8_t afc_bw = reg_read(*radio, FSK_REG_RX_BW);
-		reg_write(*radio, FSK_REG_RX_BW, afc_bw | FSK_BW_83_3_KHZ);
+		uint8_t afc_bw = reg_read(radio, FSK_REG_RX_BW);
+		reg_write(radio, FSK_REG_RX_BW, afc_bw | FSK_BW_83_3_KHZ);
 
 		// Bitrate
-		reg_write(*radio, FSK_REG_BITRATE_MSB, FSK_BITRATE_1_2_KBPS >> 8);
-		reg_write(*radio, FSK_REG_BITRATE_LSB, (uint8_t) FSK_BITRATE_1_2_KBPS);
+		reg_write(radio, FSK_REG_BITRATE_MSB, FSK_BITRATE_1_2_KBPS >> 8);
+		reg_write(radio, FSK_REG_BITRATE_LSB, (uint8_t) FSK_BITRATE_1_2_KBPS);
 
 		// Frequency Deviation
 		uint16_t dev = 10000;
 		uint16_t frequencyDev = (uint16_t) (dev / 61);
-		reg_write(*radio, FSK_REG_FDEV_MSB, frequencyDev >> 8);
-		reg_write(*radio, FSK_REG_FDEV_LSB, frequencyDev);
+		reg_write(radio, FSK_REG_FDEV_MSB, frequencyDev >> 8);
+		reg_write(radio, FSK_REG_FDEV_LSB, frequencyDev);
 
 		// Packet Config
 		uint8_t packet_config = 0x00;
@@ -195,11 +189,11 @@ static void maximize_tx(radio_t *radio) {
 		packet_config |= (0b1 << 4);            // crc
 		packet_config |= (0b0 << 3);            // auto crc discard
 		packet_config |= (0b00 << 1);           // no addr filtering
-		reg_write(*radio, PACKET_CFG, packet_config);
+		reg_write(radio, PACKET_CFG, packet_config);
 
-		uint8_t packet_config_2 = reg_read(*radio, PACKET_CFG_2);
-		packet_config_2 |= 0x40; // makes sure it is in packet mode
-		reg_write(*radio, PACKET_CFG_2, packet_config_2);
+		uint8_t packet_config_2 = reg_read(radio, PACKET_CFG_2);
+		packet_config_2 |= (0b1 << 6); // makes sure it is in packet mode
+		reg_write(radio, PACKET_CFG_2, packet_config_2);
 
 	}
 }
@@ -208,7 +202,7 @@ static void maximize_tx(radio_t *radio) {
  * Set Module Output Power
  * @arg power: Power in dBm
  */
-static void set_power(radio_t radio, uint8_t power) {
+static void set_power(radio_t *radio, uint8_t power) {
 	/**
 	 * Hardcoded Values, based on other libraries
 	 * Datasheet PowerOutput function DOESN'T work
@@ -223,40 +217,40 @@ static void set_power(radio_t radio, uint8_t power) {
  * Configure IO pins (DIO) as interrupts sources
  * DIO0, as TxDone (aka PacketSent)
  */
-static void set_diomap(radio_t radio) {
+static void set_diomap(radio_t *radio) {
 	uint8_t map = 0;
-	if (radio.mode == OP_TRANSMIT && radio.modulation == MOD_LORA) {
+	if (radio->mode == OP_TRANSMIT && radio->modulation == MOD_LORA) {
 		map = 0x40;
-	} else if (radio.mode == OP_RECEIVE && radio.modulation == MOD_LORA) {
+	} else if (radio->mode == OP_RECEIVE && radio->modulation == MOD_LORA) {
 		map = 0x00;
-	} else if (radio.mode == OP_TRANSMIT && radio.modulation == MOD_FSK) {
+	} else if (radio->mode == OP_TRANSMIT && radio->modulation == MOD_FSK) {
 		map = 0x00;
 		map |= 0b00110000; // remove o som do buzzer no DIO1
-	} else if (radio.mode == OP_RECEIVE && radio.modulation == MOD_FSK) {
+	} else if (radio->mode == OP_RECEIVE && radio->modulation == MOD_FSK) {
 		map = 0x40;
 	}
 	reg_write(radio, DIO_MAPPING_1, map);
 }
 
 static void set_rx(radio_t *radio) {
-	// Enable LNA
-	uint8_t lna = reg_read(*radio, FSK_REG_LNA);
-	reg_write(*radio, FSK_REG_LNA, lna | 0b00000011);
-
+	uint8_t lna = reg_read(radio, FSK_REG_LNA);
+	reg_write(radio, FSK_REG_LNA, lna | 0b00000011);
 	radio->mode = OP_RECEIVE;
-	set_opmode(*radio, MODE_RX);
-	set_diomap(*radio);
+
+	set_opmode(radio, MODE_RX);
+	set_diomap(radio);
 }
 
 /**
  * Set syncword to network identification
  */
-static void set_syncword(radio_t radio, uint8_t len, uint8_t value) {
+static void set_syncword(radio_t *radio, uint8_t len, uint8_t value) {
 	cap_max(len, 8);
 	if (value == 0x00) {
 		onError(-10);
 	}
-	if (radio.modulation == MOD_LORA) {
+
+	if (radio->modulation == MOD_LORA) {
 		reg_write(radio, 0x39, value);
 	} else {
 		uint8_t sync_config = 0x00;
@@ -283,77 +277,70 @@ error_t transmit(radio_t *radio, packet_t packet) {
 	radio->mode = OP_TRANSMIT;
 	init(radio); 		// re-initializes radio using packet params
 
-	set_opmode(*radio, MODE_STDBY);
-	set_syncword(*radio, 8, packet.network);
-//
-	// PacketLength can be more than 64 bytes
-	reg_write(*radio, PACKET_LEN, packet.data.size);
+	set_opmode(radio, MODE_STDBY);
+	set_syncword(radio, 8, packet.network);
 
-	// Set preamble
 	uint16_t preamble_len = 16;
-	reg_write(*radio, FSK_REG_PREAMBLE_LEN_MSB, preamble_len >> 8);
-	reg_write(*radio, FSK_REG_PREAMBLE_LEN_LSB, preamble_len);
-	delay_ms(5);
+	if (radio->modulation == MOD_FSK) {
+		//
+		// PacketLength can be more than 64 bytes
+		reg_write(radio, PACKET_LEN, packet.data.size);
+		// Set preamble
+		reg_write(radio, FSK_REG_PREAMBLE_LEN_MSB, preamble_len >> 8);
+		reg_write(radio, FSK_REG_PREAMBLE_LEN_LSB, preamble_len);
+		// FIFO Threshold 1 less than packet size
+		//	(read the register description for explanation)
+		reg_write(radio, FSK_REG_FIFO_THRESH, packet.data.size - 1);
+	} else {
+		reg_write(radio, 0x20, preamble_len >> 8);
+		reg_write(radio, 0x21, preamble_len);
+		// PacketLen (max)
+		reg_write(radio, 0x22, packet.data.size);
+		uint8_t fifo_tx_addr = reg_read(radio, 0x0E);
+		reg_write(radio, 0x0D, fifo_tx_addr);
+	}
 
-	// FIFO Threshold 1 less than packet size
-	//	(read the register description for explanation)
-	reg_write(*radio, FSK_REG_FIFO_THRESH, packet.data.size - 1);
+	int len = packet.data.size % 65;
+	buffer_view_t data_window_v = { .size = len, .data = packet.data.data };
+	// send those first bytes still in standby mode
+	fifo_write(radio, data_window_v);
+	// enter transmit mode
+	set_opmode(radio, MODE_TX);
 
-	if (packet.data.size <= 64) {
-		// Write full payload to FIFO
-		fifo_write(*radio, packet.data);
+	uint8_t bytes_sent = data_window_v.size;
+	uint8_t rest = packet.data.size - bytes_sent;
 
-		// Start Transmission
-		set_opmode(*radio, MODE_TX);
-
-	} else if (packet.data.size > 64) {
-		printf("Attempting to transmit Large Packet (%d) \r\n",
-				packet.data.size);
-		// create a buffer view pointing to the first 64 bytes of the packet
-		buffer_view_t packet_fragment_v =
-				{ .size = 64, .data = packet.data.data };
-		// send those first bytes still in standby mode
-		fifo_write(*radio, packet_fragment_v);
-		// enter transmit mode
-		set_opmode(*radio, MODE_TX);
-
-		uint8_t bytes_sent = packet_fragment_v.size;
-		uint8_t rest = packet.data.size - bytes_sent;
-
-		while (rest > 0) {
-			// While NOT FifoEmpty Flag (wait for fifo to clear)
-			// TODO: add timeout to avoid whole program freeze
-			while (!((reg_read(*radio, FIFO_FLAGS) >> 6) & 1)) {
-				delay_ms(10);
-			}
-			// re-construct buffer view pointing to remaining bytes
-			packet_fragment_v.data = &packet.data.data[bytes_sent];
-			packet_fragment_v.size = rest % 65; // what is left, up to 64
-			fifo_write(*radio, packet_fragment_v);
-			bytes_sent += packet_fragment_v.size;
-			rest = packet.data.size - bytes_sent;
+	while (rest > 0) {
+		// While NOT FifoEmpty Flag (wait for fifo to clear)
+		// TODO: add timeout to avoid whole program freeze
+		while (!((reg_read(radio, FIFO_FLAGS) >> 6) & 1)) {
+			delay_ms(10);
 		}
-
+		// re-construct buffer view pointing to remaining bytes
+		data_window_v.data = &packet.data.data[bytes_sent];
+		data_window_v.size = rest % 65; // what is left, up to 64
+		fifo_write(radio, data_window_v);
+		bytes_sent += data_window_v.size;
+		rest = packet.data.size - bytes_sent;
 	}
 
 	// Pool Interrupt Flag
 	// TODO: add timeout to avoid whole program freeze
 	printf("Waiting for DIO0 Interrupt\r\n");
-	while (!dio0_flag) {
+	while (radio->flags.TxDone) {
 		// we expect packets to take between 500ms and 1000ms
 		delay_ms(10);
 	}
 	dio0_flag = 0;
 
 	// Get out of TX mode
-	set_opmode(*radio, MODE_STDBY);
-	delay_ms(10);
+	set_opmode(radio, MODE_STDBY);
 
 	// Clear appropriate flag
 	if (radio->modulation == MOD_LORA) {
-		reg_write(*radio, LORA_IRQ_FLAGS, 0xFF);
+		reg_write(radio, LORA_IRQ_FLAGS, 0xFF);
 	} else {
-		reg_read(*radio, FIFO_FLAGS);
+		reg_read(radio, FIFO_FLAGS);
 	}
 
 	set_rx(radio);
@@ -370,29 +357,27 @@ error_t init(radio_t *radio) {
 	gpio_high(radio->reset);
 
 	reset(radio);
+	radio_register(radio);
 
 	// check if module is connected
-	uint8_t const id = reg_read(*radio, CHIP_ID);
+	uint8_t id = reg_read(radio, CHIP_ID);
 	if (id != 0x12) {
 		onError(NO_CHIP);
 	}
 
-	set_opmode(*radio, MODE_SLEEP);
-	delay_ms(10);
+	set_opmode(radio, MODE_SLEEP);
 
-	set_frequency(*radio);
+	set_frequency(radio);
 
-	set_opmode(*radio, MODE_STDBY);
+	set_opmode(radio, MODE_STDBY);
 
 	if (radio->modulation == MOD_LORA)
-		set_syncword(*radio, 1, radio->network);
+		set_syncword(radio, 1, radio->network);
 	else
-		set_syncword(*radio, 8, radio->network);
+		set_syncword(radio, 8, radio->network);
 
-	set_diomap(*radio);
+	set_diomap(radio);
 	maximize_tx(radio);
-
-	delay_ms(10);
 
 	// in case we are configuring radio for transmission
 	if (radio->mode != OP_TRANSMIT) {
@@ -419,6 +404,10 @@ void onTxDone(void) {
 	printf("OnDone\r\n");
 }
 
+void getRunningRadios() {
+
+}
+
 /**
  * Called on internal errors
  */
@@ -442,3 +431,41 @@ void onError(radio_error_t error) {
 //	while (1)
 //		;
 }
+
+#define MAX_RADIOS  4
+radio_t *radios[MAX_RADIOS];
+
+static void radio_register(radio_t *radio) {
+	static int counter = 0;
+	int index = radio->flags.index;
+	if (radios[index] == radio) {
+		return;
+	}
+	radios[counter] = radio;
+	radio->flags.index = counter;
+	counter++;
+}
+
+static void get_packet(radio_t *radio) {
+	#error "Not fully implemented"
+	// read fifo
+	// clear flags
+	// write to buffer
+}
+
+void handle_interrupt(gpio_pin_t gpio) {
+	for (int i = 0; i < MAX_RADIOS; ++i) {
+		radio_t *radio = radios[i];
+		if (memcmp(&gpio, &radio->dio0, sizeof(gpio)) == 0) {
+			if (radio->mode == OP_TRANSMIT) {
+				radio->flags.TxDone = true;
+			} else if (radio->mode == OP_RECEIVE) {
+				radio->flags.RxDone = true;
+				get_packet(radio);
+			} else {
+			}
+			return;
+		}
+	}
+}
+

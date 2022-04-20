@@ -11,6 +11,7 @@
 #include "platform/platform.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 #define _frequency(f) ((uint64_t)f << 19)/ 32000000
 
 typedef enum {
@@ -38,16 +39,23 @@ typedef struct {
 	modulation_t modulation;
 } packet_t;
 
+typedef struct {
+	volatile bool RxDone;
+	volatile bool TxDone;
+	int index;
+} radio_interrupts_t;
 
 typedef struct {
 	modulation_t modulation;
 	network_t network;
 	frequency_t frequency;
 	spi_device_t dev;
-	gpio_pin_t dio[5];
+	gpio_pin_t dio0;
 	gpio_pin_t reset;
 	opmode_t mode;
+	radio_interrupts_t flags;
 } radio_t;
+
 
 typedef enum {
 	OK, FAIL_UNKNOWN, FAIL_READ, FAIL_WRITE, NO_CHIP
@@ -55,6 +63,7 @@ typedef enum {
 
 error_t init(radio_t* radio);
 error_t transmit(radio_t* radio, packet_t packet);
+void handle_interrupt(gpio_pin_t gpio);
 void onError(radio_error_t error);
 void onTxDone(void);
 
@@ -97,9 +106,15 @@ void onTxDone(void);
 #define MODEM_CONFIG_1 0x1D
 #define MODEM_CONFIG_2 0x1E
 #define MODEM_CONFIG_3 0x26
-#define BW_125K 0x70
-#define BW_250K 0x80
-#define BW_500K 0x90
+
+
+#define BW_31_25K 	0x40
+#define BW_41_7K 	0x50
+#define BW_62_5K 	0x60
+#define BW_125K 	0x70
+#define BW_250K 	0x80
+#define BW_500K 	0x90
+
 #define DIO_MAPPING_1 0x40
 #define SYNC_CONFIG 0x27
 #define LORA_IRQ_FLAGS 0x12
