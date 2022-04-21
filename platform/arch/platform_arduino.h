@@ -48,7 +48,7 @@ EXPORT void delay_ms(uint32_t time) { delay(time); }
  *
  *
  */
-//#ifdef HAL_I2C_MODULE_ENABLED //Macro para detectar uso da wire
+#ifdef TwoWire_h //Macro para detectar uso da wire
 
 /**
  * Agrupa a interface i2c e o endereço do escravo
@@ -77,11 +77,12 @@ Wire.begin();
 /***
  * Acesso direto, transmite no barramento do I2C, sem enviar
  * endereço de registrador
+ * DAR SHIFT NO ENDEREÇO!!!!
  */
 EXPORT error_t i2c_transmit(i2c_device_t device, buffer_view_t buffer) {
   Wire.beginTransmission(device.address);
-  transmit = Wire.write(buffer.data, buffer.size);
-  Wire.endTransmission();
+  transmit = Wire.write(buffer.data, buffer.size);//ver quantos bytes ele envia
+  Wire.endTransmission(); //VER ESSE PROBLEMA DE USAR MAIS BYTES
   return Transmit;
 }
 /***
@@ -98,7 +99,7 @@ EXPORT error_t i2c_receive(i2c_device_t device, buffer_view_t buffer) {
   return buffer;
 }
 
-//#endif
+#endif
 
 /**
  * Essa macro só é definida se o GPIO for ser utilizado
@@ -149,7 +150,7 @@ EXPORT void gpio_toggle(gpio_pin_t pin) {
  *
  *
  */
-//#if defined(HAL_SPI_MODULE_ENABLED)
+#if defined(_SPI_H_INCLUDED)
 
 
 typedef struct {
@@ -164,9 +165,7 @@ typedef struct {
  * 
  */
 SPI.begin();
-#if defined(WIRE_HAS_TIMEOUT)
-    Wire.setWireTimeout(TIMEOUT, true);
-#endif
+
 
 EXPORT error_t spi_transceive(spi_device_t device, buffer_view_t rx_buffer,
                               buffer_view_t tx_buffer) {
@@ -190,4 +189,42 @@ EXPORT error_t spi_transmit(spi_device_t device, buffer_view_t buffer_view) {
   return error;
 }
 
-//#endif
+#endif
+
+/***
+ * MODULO UART
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
+
+#ifdef SoftwareSerial_h
+
+
+/**
+ * Inicializa a biblioteca serial e acessa como controlador
+ * Configura o timeout das funções da serial
+ * Em caso de timeout, efetua reset do hardware da serial
+ * 
+ */
+serial.begin();
+serial.setTimeout(TIMEOUT);
+typedef struct {
+  uart_t *uart;
+} uart_connection_t;
+
+EXPORT error_t uart_writeN(uart_connection_t conn, buffer_view_t buffer) {
+  return serial.write(buffer.data, buffer.size);
+}
+
+EXPORT error_t uart_readN(uart_connection_t conn, buffer_view_t buffer) {
+  return serial.readBytes(buffer.data, buffer.size);
+}
+
+#endif
