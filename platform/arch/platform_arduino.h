@@ -90,7 +90,7 @@ typedef struct {
  * DAR SHIFT NO ENDEREÇO!!!!
  */
 EXPORT error_t i2c_transmit(i2c_device_t device, buffer_view_t buffer) {
-  Wire.beginTransmission(device.address);
+  Wire.beginTransmission(device.address << 1);
   transmit = Wire.write(buffer.data, buffer.size);//ver quantos bytes ele envia
   Wire.endTransmission(); //VER ESSE PROBLEMA DE USAR MAIS BYTES
   return Transmit;
@@ -263,6 +263,50 @@ EXPORT error_t uart_writeN(uart_connection_t conn, buffer_view_t buffer) {
 
 EXPORT error_t uart_readN(uart_connection_t conn, buffer_view_t buffer) {
   return serial.readBytes(buffer.data, buffer.size);
+}
+
+#endif
+
+/***
+ * MODULO ADC
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
+#ifdef Arduino_h
+
+typedef int adc_handle_t;
+static adc_handle_t fake_ADC = 1;
+typedef struct {
+  adc_handle_t *handle;
+  uint8_t bits; //o número de bits é fixo no arduino
+  float voltage_reference;
+} adc_t;
+
+EXPORT error_t adc_init(adc_t *adc) {
+  HAL_ADC_Start(adc->handle);
+  // Na CubeIDE está com um falso-positivo de erro sobre o ErrorCode, mas
+  // compila sem errros
+  return adc->handle->ErrorCode;
+}
+
+EXPORT result_uint16_t adc_read(adc_t *adc) {
+  result_uint16_t out = {.hasError = 1, .value = 0xFF};
+  out.value = HAL_ADC_GetValue(adc->handle);
+  out.hasError = adc->handle->ErrorCode;
+  return out;
+}
+
+EXPORT float adc_raw_to_voltage(adc_t adc, uint16_t value) {
+  const float volts_per_step =
+      (adc.voltage_reference - 0.f) / ((1 << adc.bits) - 1);
+  return volts_per_step * value;
 }
 
 #endif
