@@ -266,3 +266,18 @@ EXPORT error_t uart_readN(uart_connection_t conn, buffer_view_t buffer) {
 }
 
 #endif
+
+/***
+ * MODULO PWM
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
+
+#endif /* INC_PLATFORM_ARDUINO_H_ */
