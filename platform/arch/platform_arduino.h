@@ -51,6 +51,15 @@ EXPORT void delay_ms(uint32_t time) { delay(time); }
 #ifdef TwoWire_h //Macro para detectar uso da wire
 
 /**
+ * 
+ * Define o tipo da interface i2c
+ * Utilizado para compatibilidade com outras platform
+ * 
+ */
+typedef int i2c_t;
+static i2c_t fake_i2c = 1;
+
+/**
  * Agrupa a interface i2c e o endereço do escravo
  * address: Endereço NÃO shiftado do escravo
  * i2c_device_t = {
@@ -58,6 +67,7 @@ EXPORT void delay_ms(uint32_t time) { delay(time); }
  * }
  */
 typedef struct {
+  i2c_t *i2c;
   uint8_t address;
 } i2c_device_t;
 //#include <Wire.h>
@@ -112,7 +122,17 @@ EXPORT error_t i2c_receive(i2c_device_t device, buffer_view_t buffer) {
  *
  *
  */
-//#ifdef HAL_GPIO_MODULE_ENABLED //macro para detectar uso da gpio
+#ifdef Arduino_h
+
+/**
+ * 
+ * Define o tipo da interface GPIO
+ * Utilizado para compatibilidade com outras platform
+ * 
+ */
+typedef int GPIO_TypeDef;
+static GPIO_Typedef fake_GPIO = 1;
+
 
 /**
  * Agrupa a interface gpio e o pino
@@ -120,6 +140,7 @@ EXPORT error_t i2c_receive(i2c_device_t device, buffer_view_t buffer) {
  * 
  */
 typedef struct {
+  GPIO_TypeDef *port;
   uint16_t pin;
 } gpio_pin_t;
 
@@ -138,7 +159,7 @@ EXPORT void gpio_toggle(gpio_pin_t pin) {
   pinMode(pin.pin, OUTPUT);
   digitalWrite(pin.pin, !digitalRead(pin.pin));
 }
-//#endif
+#endif
 
 /**
  * Essa macro só é definida se o SPI for ser utilizado
@@ -150,10 +171,19 @@ EXPORT void gpio_toggle(gpio_pin_t pin) {
  *
  *
  */
-#if defined(_SPI_H_INCLUDED)
+#ifdef _SPI_H_INCLUDED
 
+/**
+ * 
+ * Define o tipo da interface spi
+ * Utilizado para compatibilidade com outras platform
+ * 
+ */
+typedef int spi_t;
+static spi_t fake_spi = 1;
 
 typedef struct {
+  spi_t *spi;
   gpio_pin_t pin;
 } spi_device_t;
 //#include <SPI.h>
@@ -206,6 +236,14 @@ EXPORT error_t spi_transmit(spi_device_t device, buffer_view_t buffer_view) {
 
 #ifdef SoftwareSerial_h
 
+/**
+ * 
+ * Define o tipo da interface uart
+ * Utilizado para compatibilidade com outras platform
+ * 
+ */
+typedef int uart_t;
+static uart_t fake_UART = 1;
 
 /**
  * Inicializa a biblioteca serial e acessa como controlador
