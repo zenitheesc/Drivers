@@ -79,10 +79,10 @@ typedef struct {
  * O timeout deve ser configurado testando se há possibilidade de configurá-lo na board a ser utilizada,
  * A macro WIRE_HAS_TIMEOUT testa se a versao do wire possui configuração de timeout
  */
-Wire.begin();
-#if defined(WIRE_HAS_TIMEOUT)
-    Wire.setWireTimeout(TIMEOUT, true);
-#endif
+//Wire.begin();
+//#if defined(WIRE_HAS_TIMEOUT)
+//    Wire.setWireTimeout(TIMEOUT, true);
+//#endif
 
 /***
  * Acesso direto, transmite no barramento do I2C, sem enviar
@@ -194,7 +194,7 @@ typedef struct {
  * Pulling SCK e MOSI como low e SS como high
  * 
  */
-SPI.begin();
+//SPI.begin();
 
 
 EXPORT error_t spi_transceive(spi_device_t device, buffer_view_t rx_buffer,
@@ -251,8 +251,8 @@ static uart_t fake_UART = 1;
  * Em caso de timeout, efetua reset do hardware da serial
  * 
  */
-serial.begin();
-serial.setTimeout(TIMEOUT);
+//serial.begin();
+//serial.setTimeout(TIMEOUT);
 typedef struct {
   uart_t *uart;
 } uart_connection_t;
