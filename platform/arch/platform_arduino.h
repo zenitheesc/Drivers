@@ -283,22 +283,17 @@ EXPORT error_t uart_readN(uart_connection_t conn, buffer_view_t buffer) {
 
 typedef int adc_handle_t;
 static adc_handle_t fake_ADC = 1;
+
 typedef struct {
   adc_handle_t *handle;
-  uint8_t bits; //o número de bits é fixo no arduino
-  float voltage_reference;
+  uint8_t bits; //o número de bits é fixo no arduino, 10 para a maioria, 12 em alguns
+  float voltage_reference; //a referência de tensão no arduino depende do modelo utilizado
 } adc_t;
 
-EXPORT error_t adc_init(adc_t *adc) {
-  HAL_ADC_Start(adc->handle);
-  // Na CubeIDE está com um falso-positivo de erro sobre o ErrorCode, mas
-  // compila sem errros
-  return adc->handle->ErrorCode;
-}
 
 EXPORT result_uint16_t adc_read(adc_t *adc) {
   result_uint16_t out = {.hasError = 1, .value = 0xFF};
-  out.value = HAL_ADC_GetValue(adc->handle);
+  out.value = analogRead(adc->handle);
   out.hasError = adc->handle->ErrorCode;
   return out;
 }
