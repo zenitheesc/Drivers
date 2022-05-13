@@ -20,8 +20,8 @@ static float volt_div(float r1, float r2) { return (r2) / (r1 + r2); }
  * Saida:   0 ... 5.0f (volts)
  */
 static float inv_adjustment_circuit(float adc_in) {
-  float R1 = 750.f;
-  float R2 = 1.3e3f;
+  float R1 = 1e3f;
+  float R2 = 2e3f;
   float inv_volt_div = 1.f / (volt_div(R1, R2));
   return inv_volt_div * adc_in;
 }
