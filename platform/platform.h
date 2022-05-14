@@ -52,6 +52,13 @@ MAKE_RESULT(int);
 
 /* SELECT IMPLEMENTATION */
 
+#if ESP_PLATFORM // Workaround to name conflict with ESP-IDF HAL
+#define i2c_t zen_i2c_t
+#define spi_t zen_spi_t
+#define uart_t zen_uart_t
+#define adc_t zen_adc_t
+#endif
+
 #if ARDUINO
 #include "arch/platform_arduino.h"
 #elif ESP_PLATFORM

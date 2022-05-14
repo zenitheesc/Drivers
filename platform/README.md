@@ -21,6 +21,9 @@ For STM32, it will also attempt to find the proper chip family HAL.
 If a platform is not found it is assumed to be running on a PC.
 This means calls will be logged to `stdout` with no side-effects.
 
+## Notes
+If you're using an arduino (or esp-idf) implementation, put the `#include "platform/platform.h" after
+includes to other arduino (or esp-idf) libraries. Check issue #43.
 
 ## Specification
 
