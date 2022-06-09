@@ -1,0 +1,2 @@
+# Driver BNO055
+Repositório para confecção do driver de funções mínimas para funcionamento da IMU BNO055 a ser utilizada na OBSAT. as funções a serem utilizadas foram selecionadas para que possam ser implementadas de forma breve e simplifiquem os testes.
