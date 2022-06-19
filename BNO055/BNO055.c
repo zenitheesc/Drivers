@@ -6,3 +6,30 @@
 */
 
 #include "BNO055.h"
+
+/* Read and Write register functions*/
+
+//Read Registers
+static result_uint16_t read(BNO055_t const *bno, uint8_t addr){
+        //value to return
+        result_uint16_t result = { 0 };
+        //addres send
+        buffer_view_t addr_tr = { .data = &addr, .size = sizeof(addr)};
+        result.HasError |= i2c_transmit(bno->dev, addr_tr);
+        //value send
+        uint8_t rx[2] = {0};
+        buffer_view_t read_tr = {.data = rx, .size = sizeof(rx)};
+        result.HasError |= i2c_receive(bno->dev,read_tr);
+        result.value = (rx[0] << 8) | (rx[1]);
+        return result;
+}
+
+//Write registers
+static error_t write(BNO055_t const *bno, uint8_t addr, uint16_t value){
+        //shifting value to 8 bit i2c
+        uint8_t msb = (value & 0xFF00) >> 8;
+        uint8_t lsb = value;
+        uint8_t data[] = {addr, lsb, msb};
+        buffer_view_t tx = {.data = data, .size = sizeof(data)};
+        return i2c_transmit(bno->dev, tx);
+}
