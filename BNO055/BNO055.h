@@ -25,21 +25,68 @@
 
 
 // Registradores de leitura dos dados
+#define BNO_MEASURES        (uint8_t)(0x08)
+
 // Acelerômetro
-
-// Temperatura
-
-// Giroscópio
+#define BNO_ACC_DATA_X_LSB  (uint8_t)(0x08)
+#define BNO_ACC_DATA_X_MSB  (uint8_t)(0x09)
+#define BNO_ACC_DATA_Y_LSB  (uint8_t)(0x0A)
+#define BNO_ACC_DATA_Y_MSB  (uint8_t)(0x0B)
+#define BNO_ACC_DATA_Z_LSB  (uint8_t)(0x0C)
+#define BNO_ACC_DATA_Z_MSB  (uint8_t)(0x0D)
 
 // Magnetômetro
+#define BNO_MAG_DATA_X_LSB  (uint8_t)(0x0E)
+#define BNO_MAG_DATA_X_MSB  (uint8_t)(0x0F)
+#define BNO_MAG_DATA_Y_LSB  (uint8_t)(0x10)
+#define BNO_MAG_DATA_Y_MSB  (uint8_t)(0x11)
+#define BNO_MAG_DATA_Z_LSB  (uint8_t)(0x12)
+#define BNO_MAG_DATA_Z_MSB  (uint8_t)(0x13)
+
+// Giroscópio
+#define BNO_GYR_DATA_X_LSB  (uint8_t)(0x14)
+#define BNO_GYR_DATA_X_MSB  (uint8_t)(0x15)
+#define BNO_GYR_DATA_Y_LSB  (uint8_t)(0x16)
+#define BNO_GYR_DATA_Y_MSB  (uint8_t)(0x17)
+#define BNO_GYR_DATA_Z_LSB  (uint8_t)(0x18)
+#define BNO_GYR_DATA_Z_MSB  (uint8_t)(0x19)
 
 // Euler degree
+#define BNO_EUL_DATA_X_LSB  (uint8_t)(0x1A)
+#define BNO_EUL_DATA_X_MSB  (uint8_t)(0x1B)
+#define BNO_EUL_DATA_Y_LSB  (uint8_t)(0x1C)
+#define BNO_EUL_DATA_Y_MSB  (uint8_t)(0x1D)
+#define BNO_EUL_DATA_Z_LSB  (uint8_t)(0x1E)
+#define BNO_EUL_DATA_Z_MSB  (uint8_t)(0x1F)
 
 // Quaternions degree
+#define BNO_QUA_DATA_X_LSB  (uint8_t)(0x20)
+#define BNO_QUA_DATA_X_MSB  (uint8_t)(0x21)
+#define BNO_QUA_DATA_Y_LSB  (uint8_t)(0x22)
+#define BNO_QUA_DATA_Y_MSB  (uint8_t)(0x23)
+#define BNO_QUA_DATA_Z_LSB  (uint8_t)(0x24)
+#define BNO_QUA_DATA_Z_MSB  (uint8_t)(0x25)
+#define BNO_QUA_DATA_W_LSB  (uint8_t)(0x26)
+#define BNO_QUA_DATA_W_MSB  (uint8_t)(0x27)
 
 // LIA(linear acceleration)
+#define BNO_LIA_DATA_X_LSB  (uint8_t)(0x28)
+#define BNO_LIA_DATA_X_MSB  (uint8_t)(0x29)
+#define BNO_LIA_DATA_Y_LSB  (uint8_t)(0x2A)
+#define BNO_LIA_DATA_Y_MSB  (uint8_t)(0x2B)
+#define BNO_LIA_DATA_Z_LSB  (uint8_t)(0x2C)
+#define BNO_LIA_DATA_Z_MSB  (uint8_t)(0x2D)
 
 // GV(Gravity vector)
+#define BNO_GRV_DATA_X_LSB  (uint8_t)(0x2E)
+#define BNO_GRV_DATA_X_MSB  (uint8_t)(0x2F)
+#define BNO_GRV_DATA_Y_LSB  (uint8_t)(0x30)
+#define BNO_GRV_DATA_Y_MSB  (uint8_t)(0x31)
+#define BNO_GRV_DATA_Z_LSB  (uint8_t)(0x32)
+#define BNO_GRV_DATA_Z_MSB  (uint8_t)(0x33)
+
+// Temperature
+#define BNO_TEMP_DATA       (uint8_t)(0x34)
 
 typedef struct {
     //General
