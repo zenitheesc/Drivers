@@ -41,3 +41,34 @@
 
 // GV(Gravity vector)
 
+typedef struct {
+    //General
+
+    //Filter
+
+    //Ranges
+
+    //Modes
+}BNO055_config_t;
+
+typedef struct {
+    i2c_device_t dev;
+    BNO055_config_t config;
+}BNO055_t;
+
+typedef struct {
+    float AccelX;
+    float AccelY;
+    float AccelZ;
+    float Temp;
+    float GyroX;
+    float GyroY;
+    float GyroZ;
+    float EulerX;
+    float EulerY;
+    float EulerZ;
+    float QuateX;
+    float QuateY;
+    float QuateZ;
+    float QuateW;
+}
