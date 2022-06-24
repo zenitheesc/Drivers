@@ -14,16 +14,6 @@
 
 // Name                //Address(hex)
 
-// Registradores de configuração
-
-
-
-
-
-
-
-
-
 // Registradores de leitura dos dados
 #define BNO_MEASURES        (uint8_t)(0x08)
 
@@ -88,9 +78,23 @@
 // Temperature
 #define BNO_TEMP_DATA       (uint8_t)(0x34)
 
+// Registradores de configuração
+
+// Seleeção da unidade de medida
+#define BNO_UNIT_SEL        (uint8_t)(0x3B)
+
+
+/* CONFIGURAÇÕES */
+
+//UNIT_SEL
+//Por padrão espera-se que os defaults sejam zerados
+//Como o datasheet não comenta o default
+//Altera-se para todos zeros, para unidades convenientes
+
+
 typedef struct {
-    //General
-    //uint8_t ;
+    //Unit
+    uint8_t UnitSelect;
     //Filter
     uint8_t LowPassFilter;
     //Ranges
