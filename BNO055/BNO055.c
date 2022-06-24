@@ -10,17 +10,17 @@
 /* Read and Write register functions*/
 
 //Read Registers
-static result_uint16_t read(BNO055_t const *bno, uint8_t addr){
+static result_uint8_t read(BNO055_t const *bno, uint8_t addr){
         //value to return
-        result_uint16_t result = { 0 };
+        result_uint8_t result = { 0 };
         //addres send
         buffer_view_t addr_tr = { .data = &addr, .size = sizeof(addr)};
         result.HasError |= i2c_transmit(bno->dev, addr_tr);
         //value send
-        uint8_t rx[2] = {0};
-        buffer_view_t read_tr = {.data = rx, .size = sizeof(rx)};
+        uint8_t rx = 0;
+        buffer_view_t read_tr = {.data = &rx, .size = sizeof(rx)};
         result.HasError |= i2c_receive(bno->dev,read_tr);
-        result.value = (rx[0] << 8) | (rx[1]);
+        result.value = rx;
         return result;
 }
 
