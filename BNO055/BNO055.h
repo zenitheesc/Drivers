@@ -119,6 +119,15 @@
 #define BNO_MODE_NDOFOFF    (uint8_t)(0x0B)
 #define BNO_MODE_NDO        (uint8_t)(0x0C)
 
+//SYS_TRIGGER
+//Além das funções de interrupções não utilizadas
+//Há dois bits para reset do sistema
+//Importantes para reiniciar o sistema e garantir tudo em default
+//Reset do sistema
+#define BNO_SYS_RST         (uint8_t)(0x20)
+//Self test
+#define BNO_SYS_ST          (uint8_t)(0x01)
+
 
 typedef struct {
     //Unit
