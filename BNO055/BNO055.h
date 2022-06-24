@@ -83,6 +83,12 @@
 // Seleeção da unidade de medida
 #define BNO_UNIT_SEL        (uint8_t)(0x3B)
 
+// Modo de operação(!!!)
+#define BNO_OPR_MODE        (uint8_t)(0x3D)
+
+// Triggers do sistema
+#define BNO_SYS_TRIGGER     (uint8_t)(0x3F)
+
 
 /* CONFIGURAÇÕES */
 
@@ -90,6 +96,28 @@
 //Por padrão espera-se que os defaults sejam zerados
 //Como o datasheet não comenta o default
 //Altera-se para todos zeros, para unidades convenientes
+#define BNO_UNIT_DEFAULT    (uint8_t)(0x00)
+#define BNO_UNIT_ANDROID    (uint8_t)(0x80)
+#define BNO_UNIT_RADIAN     (uint8_t)(0x0C)
+
+//OPR_MODE
+//Há muitas formas dele operar
+//Cada uma com um conjunto de sensores
+//Deve-se colocar no modo de configuração para escrever registradores
+//Deve-se sair do modo configuração para receber dados
+//Os modos fusion não aceitam muitas configurações
+//Somente o OPR_MODE é writable se não estiver neste modo
+#define BNO_MODE_CONFIG     (uint8_t)(0x00)
+//Non-fusion modes
+#define BNO_MODE_ACCONLY    (uint8_t)(0x01)
+#define BNO_MODE_MAGONLY    (uint8_t)(0x02)
+#define BNO_MODE_GYRONLY    (uint8_t)(0x03)
+#define BNO_MODE_ACCGYRO    (uint8_t)(0x05)
+//Fusion modes
+#define BNO_MODE_IMU        (uint8_t)(0x08)
+#define BNO_MODE_M4G        (uint8_t)(0x0A)
+#define BNO_MODE_NDOFOFF    (uint8_t)(0x0B)
+#define BNO_MODE_NDO        (uint8_t)(0x0C)
 
 
 typedef struct {
