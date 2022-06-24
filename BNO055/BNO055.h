@@ -90,12 +90,15 @@
 
 typedef struct {
     //General
-
+    //uint8_t ;
     //Filter
-
+    uint8_t LowPassFilter;
     //Ranges
-
+    uint8_t AccelRange;
+    uint8_t GyroRange;
+    uint8_t MagRange;
     //Modes
+    uint8_t OpMode;
 }BNO055_config_t;
 
 typedef struct {
@@ -119,3 +122,4 @@ typedef struct {
     float QuateZ;
     float QuateW;
 }
+
