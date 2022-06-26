@@ -73,7 +73,7 @@ static error_t config(bmp280_t *bmp) {
   uint8_t ctrl_meas = 0x00;
   ctrl_meas |= (0b010 << 5); // osrs_t = x2 oversampling
   ctrl_meas |= (0b001 << 2); // osrs_p = x1 oversampling
-  ctrl_meas |= (0b00 << 0);	  // mode   = sleep
+  ctrl_meas |= (0b00 << 0);  // mode   = sleep
   error_t e = write(bmp, BMP_CTRL_MEAS, ctrl_meas);
 
   uint8_t config = 0x00;
@@ -84,14 +84,12 @@ static error_t config(bmp280_t *bmp) {
   return e;
 }
 
-static error_t force_measure(bmp280_t * bmp){
-	result_uint8_t ctrl_meas = read(bmp, BMP_CTRL_MEAS);
-	ctrl_meas.value |= (0b01 << 0);  // mode   = forced
-	error_t e = write(bmp, BMP_CTRL_MEAS, ctrl_meas.value);
+static error_t force_measure(bmp280_t *bmp) {
+  result_uint8_t ctrl_meas = read(bmp, BMP_CTRL_MEAS);
+  ctrl_meas.value |= (0b01 << 0); // mode   = forced
+  error_t e = write(bmp, BMP_CTRL_MEAS, ctrl_meas.value);
   return e;
-
 }
-
 
 error_t bmp280_init(bmp280_t *bmp) {
   result_uint8_t id = read(bmp, BMP_ID);
@@ -127,32 +125,34 @@ bmp280_measurement_t bmp280_measure(bmp280_t *bmp) {
 
   result_int pres = read_pres(bmp);
 
-  var1 = ((int64_t)t_fine) - 128000;
-  var2 = var1 * var1 * (int64_t)bmp->pres_calib[6];
-  var2 = var2 + ((var1 * (int64_t)bmp->pres_calib[5]) << 17);
-  var2 = var2 + (((int64_t)bmp->pres_calib[4]) << 35);
-  var1 = ((var1 * var1 * (int64_t)bmp->pres_calib[3]) >> 8) +
-         ((var1 * (int64_t)bmp->pres_calib[2]) << 12);
-  var1 = (((((int64_t) 1) << 47) + var1))
-									* ((int64_t) bmp->pres_calib[1]) >> 33;
+  var1 = t_fine - 128000;
 
-							if (var1 == 0) {
-								out.error = 1;
-								return out; // avoid exception caused by division by zero
-							}
+  var2 = var1 * var1;
+  var2 *= bmp->pres_calib[6];
+  var2 += (var1 * bmp->pres_calib[5]) << 17;
+  var2 += ((int64_t)bmp->pres_calib[4]) << 35;
 
-							int64_t p = 1048576 - pres.value;
-							p = (((p << 31) - var2) * 3125) / var1;
-							var1 = (((int64_t) bmp->pres_calib[9]) * (p >> 13)
-									* (p >> 13)) >> 25;
-							var2 = (((int64_t) bmp->pres_calib[8]) * p) >> 19;
+  var1 = var1 * var1;
+  var1 *= bmp->pres_calib[3] >> 8;
+  var1 += (var1 * bmp->pres_calib[2]) << 12;
+  var1 += 1L << 47;
+  var1 *= ((int64_t)bmp->pres_calib[1]);
+  var1 >>= 33;
+  if (var1 == 0) {
+    out.error = 1;
+    return out; // avoid exception caused by division by zero
+  }
 
-							p = ((p + var1 + var2) >> 8)
-									+ (((int64_t) bmp->pres_calib[7]) << 4);
-							float P = p / 256.f;
+  int64_t p = 1048576 - pres.value;
+  p = (((p << 31) - var2) * 3125) / var1;
+  var1 = (((int64_t)bmp->pres_calib[9]) * (p >> 13) * (p >> 13)) >> 25;
+  var2 = (((int64_t)bmp->pres_calib[8]) * p) >> 19;
 
-							out.pressure = P;
-							out.temperature = T;
-							out.error = 0;
-							return out;
-						}
+  p = ((p + var1 + var2) >> 8) + (((int64_t)bmp->pres_calib[7]) << 4);
+  float P = p / 256.f;
+
+  out.pressure = P;
+  out.temperature = T;
+  out.error = 0;
+  return out;
+}
