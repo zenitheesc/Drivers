@@ -99,6 +99,9 @@
 // Configuração do acelerometro
 #define BNO_ACC_CONFIG      (uint8_t)(0x08)
 
+// Configuração do magnetometro
+#define BNO_MAG_CONFIG      (uint8_t)(0x09)
+
 
 
 
@@ -168,6 +171,20 @@
 #define BNO_ACC_250HZ       (uint8_t)(0x15)
 #define BNO_ACC_500HZ       (uint8_t)(0x19)
 #define BNO_ACC_10000HZ     (uint8_t)(0x1D)
+
+// MAG_CONFIG
+// As configurações do magnetometro seguem a mesma regra do acc
+// Considerando modo de energia normal e operação regular
+// mudando a taxa de saida de dados
+//
+#define BNO_MAG_2HZ         (uint8_t)(0x08)
+#define BNO_MAG_6HZ         (uint8_t)(0x09)
+#define BNO_MAG_8HZ         (uint8_t)(0x10)
+#define BNO_MAG_10HZ        (uint8_t)(0x0B)
+#define BNO_MAG_15HZ        (uint8_t)(0x0C)
+#define BNO_MAG_20HZ        (uint8_t)(0x0D)
+#define BNO_MAG_25HZ        (uint8_t)(0x0E)
+#define BNO_MAG_30HZ        (uint8_t)(0x0F)
 
 
 
