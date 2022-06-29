@@ -83,7 +83,8 @@
 // Mudança de página
 #define Page_ID             (uint8_t)(0x07)
 
-// Page 0
+// Page 0 //
+
 // Seleeção da unidade de medida
 #define BNO_UNIT_SEL        (uint8_t)(0x3B)
 
@@ -93,7 +94,13 @@
 // Triggers do sistema
 #define BNO_SYS_TRIGGER     (uint8_t)(0x3F)
 
-// Page 1
+// Page 1 //
+
+// Configuração do acelerometro
+#define BNO_ACC_CONFIG      (uint8_t)(0x08)
+
+
+
 
 
 
@@ -144,6 +151,26 @@
 // Mesma página das configurações 1 mas com nome diferebnte 
 // para facilitar a leitura do driver
 #define BNO_PAGE_MEASURES   (uint8_t)(0x00)
+
+// ACC_CONFIG
+// As configurações do acelerometro somente podem ser alteradas
+// no modo sensor e não no modo fusion, ainda assim, para teste
+// pode ser util testar o modo sensor
+// Caso seja escrito algo e colocado em modo fusion
+// o proprio BNO reescreve os registradores sem problemas
+// Considerando modo de operação normal e 4G de range
+//                                   (0b000xxx01)
+#define BNO_ACC_07HZ        (uint8_t)(0x01)
+#define BNO_ACC_16HZ        (uint8_t)(0x05)
+#define BNO_ACC_31HZ        (uint8_t)(0x09)
+#define BNO_ACC_62HZ        (uint8_t)(0x0D)
+#define BNO_ACC_125HZ       (uint8_t)(0x11)
+#define BNO_ACC_250HZ       (uint8_t)(0x15)
+#define BNO_ACC_500HZ       (uint8_t)(0x19)
+#define BNO_ACC_10000HZ     (uint8_t)(0x1D)
+
+
+
 
 
 
