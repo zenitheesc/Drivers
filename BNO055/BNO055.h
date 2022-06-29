@@ -102,6 +102,9 @@
 // Configuração do magnetometro
 #define BNO_MAG_CONFIG      (uint8_t)(0x09)
 
+// Configuração do giroscopio
+#define BNO_GYR_CONFIG      (uint8_t)(0x0A)
+
 
 
 
@@ -176,7 +179,7 @@
 // As configurações do magnetometro seguem a mesma regra do acc
 // Considerando modo de energia normal e operação regular
 // mudando a taxa de saida de dados
-//
+//                                   (0bR0001xxx)
 #define BNO_MAG_2HZ         (uint8_t)(0x08)
 #define BNO_MAG_6HZ         (uint8_t)(0x09)
 #define BNO_MAG_8HZ         (uint8_t)(0x10)
@@ -186,6 +189,21 @@
 #define BNO_MAG_25HZ        (uint8_t)(0x0E)
 #define BNO_MAG_30HZ        (uint8_t)(0x0F)
 
+// GYR_CONFIG
+// As configurações seguem o mesmo esquema do acelerometro
+// A unica diferença é que utiliza um bit a mais para o range
+// por isso o power mode fica em outro register
+// porem o power mode default é suficiente, portanto so usara o 0
+// alterando somente o filtro passa baixa, mantendo o range 1000dps
+
+#define BNO_GYR_523HZ       (uint8_t)(0x01)
+#define BNO_GYR_230HZ       (uint8_t)(0x09)
+#define BNO_GYR_116HZ       (uint8_t)(0x11)
+#define BNO_GYR_47HZ        (uint8_t)(0x19)
+#define BNO_GYR_23HZ        (uint8_t)(0x21)
+#define BNO_GYR_12HZ        (uint8_t)(0x29)
+#define BNO_GYR_64HZ        (uint8_t)(0x31)
+#define BNO_GYR_32HZ        (uint8_t)(0x39)
 
 
 
