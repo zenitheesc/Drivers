@@ -80,6 +80,10 @@
 
 // Registradores de configuração
 
+// Mudança de página
+#define Page_ID             (uint8_t)(0x07)
+
+// Page 1
 // Seleeção da unidade de medida
 #define BNO_UNIT_SEL        (uint8_t)(0x3B)
 
@@ -88,6 +92,8 @@
 
 // Triggers do sistema
 #define BNO_SYS_TRIGGER     (uint8_t)(0x3F)
+
+// Page 2
 
 
 /* CONFIGURAÇÕES */
@@ -127,6 +133,19 @@
 #define BNO_SYS_RST         (uint8_t)(0x20)
 //Self test
 #define BNO_SYS_ST          (uint8_t)(0x01)
+
+// Page ID
+// Mudar a página do bloco de registradores
+// Registradores separados já por comentários em cada página
+// Registradores de leitura na primeira página
+#define BNO_PAGE_1          (uint8_t)(0x00)
+#define BNO_PAGE_2          (uint8_t)(0X01)
+// Mesma página das configurações 1 mas com nome diferebnte 
+// para facilitar a leitura do driver
+#define BNO_PAGE_MEASURES   (uint8_t)(0x00)
+
+
+
 
 
 typedef struct {
