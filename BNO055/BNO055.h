@@ -214,12 +214,10 @@
 typedef struct {
     //Unit
     uint8_t UnitSelect;
-    //Filter
-    uint8_t LowPassFilter;
-    //Ranges
-    uint8_t AccelRange;
-    uint8_t GyroRange;
-    uint8_t MagRange;
+    //Filters
+    uint8_t AccelFilter;
+    uint8_t GyroFilter;
+    uint8_t MagFilter;
     //Modes
     uint8_t OpMode;
 }BNO055_config_t;
@@ -244,5 +242,29 @@ typedef struct {
     float QuateY;
     float QuateZ;
     float QuateW;
-}
+} BNO055_values_t;
 
+// Funções de configuração
+error_t BNO055_config (BNO055_t bno);
+
+error_t BNO055_unit (BNO055_t bno);
+error_t BNO055_acc_filter (BNO055_t bno);
+error_t BNO055_gyr_filter (BNO055_t bno);
+error_t BNO055_mag_filter (BNO055_t bno);
+error_t BNO055_opmode (BNO055_t bno);
+
+//Função de Reset
+error_t BNO_reset (BNO055_t bno);
+
+//Função de mudança de página
+error_t BNO_page0 (BNO055_t bno);
+error_t BNO_page1 (BNO055_t bno);
+
+//Função de self test do chip
+error_t BNO_test (BNO055_t bno);
+
+//Função de inicialização
+error_t BNO055_init (BNO055_t bno);
+
+//Função de leitura dos dados
+error_t BNO055_measure (BNO055_t bno, BNO055_values_t *medida);
