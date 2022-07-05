@@ -45,3 +45,18 @@ error_t BNO055_unit (BNO055_t bno) {
 
         return write(bno, BNO_UNIT_SEL, unit_reg);
 }
+
+//Seleção dos filtros de leitura dos dados
+//Os filtros somente são utilizados se não estiver no modo fusion
+
+//Acelerometro
+error_t BNO055_acc_filter (BNO055_t bno) {
+        //Leitura dos valores default do registrador
+        result_uint8_t acc_filter_raw = read(bno, BNO_ACC_CONFIG);
+        acc_filter_reg = acc_filter_raw.value;
+
+        //Adição da configuração selecionada
+        acc_filter_reg |= bno.config.AccelFilter;
+
+        return write(bno, BNO_ACC_CONFIG, acc_filter_reg);
+}
