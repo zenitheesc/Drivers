@@ -60,3 +60,16 @@ error_t BNO055_acc_filter (BNO055_t bno) {
 
         return write(bno, BNO_ACC_CONFIG, acc_filter_reg);
 }
+
+//Gyroscope
+error_t BNO055_gyr_filter (BNO055_t bno) {
+        //Leitura dos valores default do registrador
+        result_uint8_t gyr_filter_raw = read(bno, BNO_GYR_CONFIG);
+        gyr_filter_reg = gyr_filter_raw.value;
+
+        //Adição da configuração selecionada
+        gyr_filter_reg |= bno.config.GyroFilter;
+
+        return write(bno, BNO_GYR_CONFIG, gyr_filter_reg);
+}
+
