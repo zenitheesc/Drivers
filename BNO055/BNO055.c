@@ -82,6 +82,7 @@ error_t BNO055_mag_filter (BNO055_t bno) {
         //Adição da configuração selecionada
         mag_filter_reg |= bno.config.MagFilter;
 
+
         return write(bno, BNO_MAG_CONFIG, mag_filter_reg);
 }
 
@@ -94,6 +95,19 @@ error_t BNO055_config_mode (BNO055_t bno) {
         //Adição da configuração selecionada
         config_mode_reg = BNO_MODE_CONFIG;
 
+
         return write(bno, BNO_OPR_MODE, config_mode_reg);
+}
+
+error_t BNO055_opmode (BNO055_t bno) {
+        //Leitura dos valores default do registrador
+        result_uint8_t opmode_raw = read(bno, BNO_OPR_MODE);
+        opmode_reg = opmode_raw.value;
+
+        //Adição da configuração selecionada
+        opmode_reg |= bno.config.OpMode;
+
+
+        return write(bno, BNO_OPR_MODE, opmode_reg);
 }
 
