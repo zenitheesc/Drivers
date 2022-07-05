@@ -81,7 +81,7 @@
 // Registradores de configuração
 
 // Mudança de página
-#define Page_ID             (uint8_t)(0x07)
+#define BNO_PAGE_ID             (uint8_t)(0x07)
 
 // Page 0 //
 
@@ -247,12 +247,12 @@ typedef struct {
 // Funções de configuração
 error_t BNO055_config (BNO055_t bno);
 
+error_t BNO055_config_mode (BNO055_t bno);
 error_t BNO055_unit (BNO055_t bno);
 error_t BNO055_acc_filter (BNO055_t bno);
 error_t BNO055_gyr_filter (BNO055_t bno);
 error_t BNO055_mag_filter (BNO055_t bno);
 error_t BNO055_opmode (BNO055_t bno);
-error_t BNO055_config_mode (BNO055_t bno);
 
 //Função de Reset
 error_t BNO_reset (BNO055_t bno);

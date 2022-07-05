@@ -99,6 +99,7 @@ error_t BNO055_config_mode (BNO055_t bno) {
         return write(bno, BNO_OPR_MODE, config_mode_reg);
 }
 
+// Função de seleção de modo de operação
 error_t BNO055_opmode (BNO055_t bno) {
         //Leitura dos valores default do registrador
         result_uint8_t opmode_raw = read(bno, BNO_OPR_MODE);
@@ -109,5 +110,45 @@ error_t BNO055_opmode (BNO055_t bno) {
 
 
         return write(bno, BNO_OPR_MODE, opmode_reg);
+}
+
+// Função de reset do chip
+error_t BNO_reset (BNO055_t bno) {
+        //Leitura dos valores default do registrador
+        result_uint8_t sys_raw = read(bno, BNO_SYS_TRIGGER);
+        sys_reg = sys_raw.value;
+
+        //Adição da configuração selecionada
+        sys_reg = BNO_SYS_RST;
+
+
+        return write(bno, BNO_SYS_TRIGGER, sys_reg);
+}
+
+// Função de seleção de páginas
+//pagina 0
+error_t BNO_page0 (BNO055_t bno) {
+        //Leitura dos valores default do registrador
+        result_uint8_t page_raw = read(bno, BNO_PAGE_ID);
+        page_reg = page_raw.value;
+
+        //Adição da configuração selecionada
+        page_reg = BNO_PAGE_0;
+
+
+        return write(bno, BNO_PAGE_ID, page_reg);
+}
+
+//pagina 1
+error_t BNO_page1 (BNO055_t bno) {
+        //Leitura dos valores default do registrador
+        result_uint8_t page_raw = read(bno, BNO_PAGE_ID);
+        page_reg = page_raw.value;
+
+        //Adição da configuração selecionada
+        page_reg = BNO_PAGE_1;
+
+
+        return write(bno, BNO_PAGE_ID, page_reg);
 }
 
