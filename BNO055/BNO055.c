@@ -85,3 +85,15 @@ error_t BNO055_mag_filter (BNO055_t bno) {
         return write(bno, BNO_MAG_CONFIG, mag_filter_reg);
 }
 
+//Coloca o chip em modo de configuração
+error_t BNO055_config_mode (BNO055_t bno) {
+        //Leitura dos valores default do registrador
+        result_uint8_t config_mode_raw = read(bno, BNO_OPR_MODE);
+        config_mode_reg = config_mode_raw.value;
+
+        //Adição da configuração selecionada
+        config_mode_reg = BNO_MODE_CONFIG;
+
+        return write(bno, BNO_OPR_MODE, config_mode_reg);
+}
+
