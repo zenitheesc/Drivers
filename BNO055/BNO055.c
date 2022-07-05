@@ -32,4 +32,16 @@ static error_t write(BNO055_t const *bno, uint8_t addr, uint16_t value){
         return i2c_transmit(bno->dev, tx);
 }
 
+/* Configurações do sensor */
 
+//Seleção da unidade de medida
+error_t BNO055_unit (BNO055_t bno) {
+        //Leitura dos valores default do registrador
+        result_uint8_t unit_raw = read(bno, BNO_UNIT_SEL);
+        unit_reg = unit_raw.value;
+
+        //Adição da configuração selecionada
+        unit_reg |= bno.config.UnitSelect;
+
+        return write(bno, BNO_UNIT_SEL, unit_reg);
+}
