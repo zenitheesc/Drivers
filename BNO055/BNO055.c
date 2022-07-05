@@ -73,3 +73,15 @@ error_t BNO055_gyr_filter (BNO055_t bno) {
         return write(bno, BNO_GYR_CONFIG, gyr_filter_reg);
 }
 
+//Magnetometer
+error_t BNO055_mag_filter (BNO055_t bno) {
+        //Leitura dos valores default do registrador
+        result_uint8_t mag_filter_raw = read(bno, BNO_MAG_CONFIG);
+        mag_filter_reg = mag_filter_raw.value;
+
+        //Adição da configuração selecionada
+        mag_filter_reg |= bno.config.MagFilter;
+
+        return write(bno, BNO_MAG_CONFIG, mag_filter_reg);
+}
+
