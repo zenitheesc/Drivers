@@ -93,7 +93,7 @@ error_t BNO055_config_mode (BNO055_t bno) {
         config_mode_reg = config_mode_raw.value;
 
         //Adição da configuração selecionada
-        config_mode_reg = BNO_MODE_CONFIG;
+        config_mode_reg |= BNO_MODE_CONFIG;
 
 
         return write(bno, BNO_OPR_MODE, config_mode_reg);
@@ -119,7 +119,7 @@ error_t BNO_reset (BNO055_t bno) {
         sys_reg = sys_raw.value;
 
         //Adição da configuração selecionada
-        sys_reg = BNO_SYS_RST;
+        sys_reg |= BNO_SYS_RST;
 
 
         return write(bno, BNO_SYS_TRIGGER, sys_reg);
@@ -133,7 +133,7 @@ error_t BNO_page0 (BNO055_t bno) {
         page_reg = page_raw.value;
 
         //Adição da configuração selecionada
-        page_reg = BNO_PAGE_0;
+        page_reg |= BNO_PAGE_0;
 
 
         return write(bno, BNO_PAGE_ID, page_reg);
@@ -146,9 +146,20 @@ error_t BNO_page1 (BNO055_t bno) {
         page_reg = page_raw.value;
 
         //Adição da configuração selecionada
-        page_reg = BNO_PAGE_1;
+        page_reg |= BNO_PAGE_1;
 
 
         return write(bno, BNO_PAGE_ID, page_reg);
 }
 
+error_t BNO_test (BNO055_t bno) {
+        //Leitura dos valores default do registrador
+        result_uint8_t page_raw = read(bno, BNO_SYS_TRIGGER);
+        sys_reg = sys_raw.value;
+
+        //Adição da configuração selecionada
+        sys_reg |= BNO_SYS_ST;
+
+
+        return write(bno, BNO_SYS_TRIGGER, sys_reg);
+}
