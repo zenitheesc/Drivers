@@ -197,3 +197,16 @@ error_t BNO055_config (BNO055_t bno) {
         }
 }
 
+// Função para inicializar o sistema
+error_t BNO055_init (BNO055_t bno) {
+
+        // Aplica um reset no sistema para garantir default
+        BNO055_reset(bno);
+
+        // Aplica as configurações
+        BNO055_config(bno);
+
+        // Coloca o sistema em em modo de leitura dos dados
+        BNO055_page1(bno);
+}
+
