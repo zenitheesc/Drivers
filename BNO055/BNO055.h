@@ -235,6 +235,9 @@ typedef struct {
     float GyroX;
     float GyroY;
     float GyroZ;
+    float MagX;
+    float MagY;
+    float MagZ;
     float EulerX;
     float EulerY;
     float EulerZ;
