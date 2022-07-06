@@ -255,14 +255,14 @@ error_t BNO055_mag_filter (BNO055_t bno);
 error_t BNO055_opmode (BNO055_t bno);
 
 //Função de Reset
-error_t BNO_reset (BNO055_t bno);
+error_t BNO055_reset (BNO055_t bno);
 
 //Função de mudança de página
-error_t BNO_page0 (BNO055_t bno);
-error_t BNO_page1 (BNO055_t bno);
+error_t BNO055_page0 (BNO055_t bno);
+error_t BNO055_page1 (BNO055_t bno);
 
 //Função de self test do chip
-error_t BNO_test (BNO055_t bno);
+error_t BNO055_test (BNO055_t bno);
 
 //Função de inicialização
 error_t BNO055_init (BNO055_t bno);
