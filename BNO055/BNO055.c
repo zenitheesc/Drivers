@@ -207,6 +207,6 @@ error_t BNO055_init (BNO055_t bno) {
         BNO055_config(bno);
 
         // Coloca o sistema em em modo de leitura dos dados
-        BNO055_page1(bno);
+        BNO055_page0(bno);
 }
 
