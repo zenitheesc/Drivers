@@ -113,7 +113,7 @@ error_t BNO055_opmode (BNO055_t bno) {
 }
 
 // Função de reset do chip
-error_t BNO_reset (BNO055_t bno) {
+error_t BNO055_reset (BNO055_t bno) {
         //Leitura dos valores default do registrador
         result_uint8_t sys_raw = read(bno, BNO_SYS_TRIGGER);
         sys_reg = sys_raw.value;
@@ -127,7 +127,7 @@ error_t BNO_reset (BNO055_t bno) {
 
 // Função de seleção de páginas
 //pagina 0
-error_t BNO_page0 (BNO055_t bno) {
+error_t BNO055_page0 (BNO055_t bno) {
         //Leitura dos valores default do registrador
         result_uint8_t page_raw = read(bno, BNO_PAGE_ID);
         page_reg = page_raw.value;
@@ -140,7 +140,7 @@ error_t BNO_page0 (BNO055_t bno) {
 }
 
 //pagina 1
-error_t BNO_page1 (BNO055_t bno) {
+error_t BNO055_page1 (BNO055_t bno) {
         //Leitura dos valores default do registrador
         result_uint8_t page_raw = read(bno, BNO_PAGE_ID);
         page_reg = page_raw.value;
@@ -152,7 +152,8 @@ error_t BNO_page1 (BNO055_t bno) {
         return write(bno, BNO_PAGE_ID, page_reg);
 }
 
-error_t BNO_test (BNO055_t bno) {
+// Função de self-test
+error_t BNO055_test (BNO055_t bno) {
         //Leitura dos valores default do registrador
         result_uint8_t page_raw = read(bno, BNO_SYS_TRIGGER);
         sys_reg = sys_raw.value;
@@ -163,3 +164,36 @@ error_t BNO_test (BNO055_t bno) {
 
         return write(bno, BNO_SYS_TRIGGER, sys_reg);
 }
+
+// Função para realizar todas as configurações
+error_t BNO055_config (BNO055_t bno) {
+
+        // Coloca o chip em modo de configuração
+        BNO055_config_mode(bno);
+
+        // Seta a página das configurações iniciais
+        BNO055_page0(bno);
+        
+        // Seta o sistema de unidades
+        BNO055_unit(bno);
+
+        // Seleciona o modo de operação
+        BNO055_opmode(bno);
+
+        // Configura os sensores caso não seja um modo fusion
+        if (bno.config.OpMode < BNO_MODE_IMU) {
+                // Realiza a configuração dos sensores
+                // Muda de página
+                BNO055_page1(bno);
+
+                // ACC
+                BNO055_acc_filter(bno);
+
+                //GYR
+                BNO055_gyr_filter(bno);
+
+                //MAG
+                BNO055_mag_filter(bno);
+        }
+}
+
