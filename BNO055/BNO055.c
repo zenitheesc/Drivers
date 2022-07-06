@@ -210,3 +210,95 @@ error_t BNO055_init (BNO055_t bno) {
         BNO055_page0(bno);
 }
 
+error_t BNO055_measures(BNO055_t bno, BNO055_values_t *medida) {
+
+        // Realiza a leitura dos regustradores de resultados
+        // Separa os resultados em cada uma das leituras
+        // Converte se necessario as medidas
+        // Armazena na struct de resultados para leitura
+
+        // Cria um buffer para leitura burst-read
+        uint8_t buffer[44] = {0xFF};
+        buffer_view_t buffer_view = {.data = buffer, .size = sizeof(buffer)};
+
+        // Leitura de todos os data registers
+        uint8_t addr = BNO_MEASURES; //endereço do início das medidas
+        buffer_view_t addr_v = {.data = &addr, .size = sizeof(addr)};
+        i2c_transmit(bno.device, addr_v);
+        error_t error = i2c_receive(bno.device, buffer_view);
+
+        // Tratamento de erro da leitura da HAL
+        if (error) {
+                return error;
+        }
+
+        // Separação das componentes da leitura
+
+        // Acelerômetro
+        int16_t acc_x = ((buffer[0] << 8) | buffer[1]);
+        int16_t acc_y = ((buffer[2] << 8) | buffer[3]);
+        int16_t acc_z = ((buffer[4] << 8) | buffer[5]);
+
+        // Magnetometro
+        int16_t mag_x = ((buffer[6] << 8) | buffer[7]);
+        int16_t mag_y = ((buffer[8] << 8) | buffer[9]);
+        int16_t mag_z = ((buffer[10] << 8) | buffer[11]);
+
+        // Gyroscopio
+        int16_t gyr_x = ((buffer[12] << 8) | buffer[13]);
+        int16_t gyr_y = ((buffer[14] << 8) | buffer[15]);
+        int16_t gyr_z = ((buffer[16] << 8) | buffer[17]);
+
+        // Euler
+        int16_t eul_x = ((buffer[18] << 8) | buffer[19]);
+        int16_t eul_y = ((buffer[20] << 8) | buffer[21]);
+        int16_t eul_z = ((buffer[22] << 8) | buffer[23]);
+
+        // Quaternion
+        int16_t qua_x = ((buffer[24] << 8) | buffer[25]);
+        int16_t qua_z = ((buffer[26] << 8) | buffer[27]);
+        int16_t qua_y = ((buffer[28] << 8) | buffer[29]);
+        int16_t qua_w = ((buffer[30] << 8) | buffer[31]);
+
+        // LIA
+        // GRV
+
+        // Temperatura
+        int16_t temp = (buffer[44]);
+
+        // Alocação na struct de resultados
+        // Acelerômetro
+        int const scaleAcc = 1; // verificar se precisa escalar
+        medida -> AccelX = ((float)acc_x) / scaleAcc;
+        medida -> AccelY = ((float)acc_y) / scaleAcc;
+        medida -> AccelZ = ((float)acc_z) / scaleAcc;
+
+        // Giroscopio
+        int const scaleGyr = 1; // verificar se precisa escalar
+        medida -> GyroX = ((float)gyr_x) / scaleGyr;
+        medida -> GyroY = ((float)gyr_y) / scaleGyr;
+        medida -> GyroZ = ((float)gyr_z) / scaleGyr;
+
+        // Magnetometro
+        int const scaleMag = 1; // verificar se precisa escalar
+        medida -> MagX = ((float)mag_x) / scaleMag;
+        medida -> MagY = ((float)mag_y) / scaleMag;
+        medida -> MagZ = ((float)mag_z) / scaleMag;
+
+        // Euler
+        int const scaleEul = 1; // verificar se precisa escalar
+        medida -> EulerX = ((float)eul_x) / scaleEul;
+        medida -> EulerY = ((float)eul_y) / scaleEul;
+        medida -> EulerZ = ((float)eul_z) / scaleEul;
+
+        // Quaternion
+        int const scaleQua = 1; // verificar se precisa escalar
+        medida -> QuateX = ((float)qua_x) / scaleQua;
+        medida -> QuateY = ((float)qua_y) / scaleQua;
+        medida -> QuateZ = ((float)qua_z) / scaleQua;
+        medida -> QuateW = ((float)qua_w) / scaleQua;
+
+        // Temp
+        int const scaleTemp = 1; // verificar se precisa escalar
+        medida -> Temp = ((float)temp) / scaleTemp;
+}
