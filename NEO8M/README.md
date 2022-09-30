@@ -6,23 +6,25 @@ GPS capaz de funcionar na altitude das sondas
 ## Exemplo
 Setup
 ```c
-uart_connection_t conn = { .uart = &huart3 };
-ublox_gps_t gps = { .conn = conn };
-ublox_pvt_t pvt;
-ublox_init(gps);
+//	uart_connection_t conn = { .uart = &huart3 };
+i2c_device_t dev = { .i2c = &hi2c1, .address = UBLOX_I2C_ADDR };
+ublox_gps_t gps = { .conn = dev };
+ublox_pvt_t pvt = {0};
+ublox_init(gps)
 ```
 Leitura de PVT (_Position Velocity Time_)
 ```c
-if (ublox_get(gps, &pvt)) {
-    // caso erro, pula pacote
-    continue;
-}
-
-printf("t: %u, y: %u, m: %u, d: %u, lat: %f, lng: %f\r\n",
-        pvt.time / 1000, pvt.year, pvt.month, pvt.day,
-        (float) pvt.lat / 1e7, (float) pvt.lng / 1e7);
-
+error_t e = ublox_get(gps, &pvt);
+			if (e) {
+				continue;
+			}
+			printf("Hoje é dia: %.2u/%.2u/%.2u\r\n", pvt.day, pvt.month, pvt.year);
+			float latitude = pvt.lat / 1e7;
+			float longitude = pvt.lng / 1e7;
+			printf("Sua posição é: (%f, %f)\r\n\r\n", latitude, longitude);
 ```
+
+
 
 Lembrando que o projeto deve ser configurado para mandar `float` com printf
 e as syscalls também devem estar configuradas
@@ -48,12 +50,14 @@ gravidade. O que é perfeito para sondas atmosféricas.
 
 ### Funcionamento da Biblioteca
 
+**Modifique o `#define UBLOX_I2C` para alterar a interface,
+ remova para UART ou matenha para I2C**
+
 Toda biblioteca funciona ao redor das mensagens do protocolo UBX
 as funções são _wrappers_ para mensagens de interesse.
 
 Se começarmos pela `init` vemos a sequencia de configuração
 ```c
-silence(gps);
 disableNmea(gps); 
 set_protocol(gps);
 set_model_mode(gps);
