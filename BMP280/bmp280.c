@@ -1,4 +1,4 @@
-#include "Application/bmp280.h"
+#include "bmp280.h"
 #include <stdint.h>
 
 static result_uint8_t read(bmp280_t *bmp, uint8_t addr) {
