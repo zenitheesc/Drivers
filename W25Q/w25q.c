@@ -11,23 +11,32 @@
  * Sends WRITE_ENABLE instruction
  */
 static void enable_write(w25q_t flash) {
-	buffer_view_t _ = { .data = NULL, .size = 0 };
-	spi_writeN(flash.dev, W25Q_WR_EN, _);
+	buffer_view_t _ = { .data = &W25Q_WR_EN, .size = 1 };
+	gpio_low(flash.dev.pin);
+	spi_transmit(flash.dev, _);
+	gpio_high(flash.dev.pin);
 }
 
 error_t w25q_chip_erase(w25q_t flash) {
 	enable_write(flash);
-	buffer_view_t _ = { .data = NULL, .size = 0 };
-	return spi_writeN(flash.dev, W25Q_CHIP_ERASE, _);
+	buffer_view_t _ = { .data = &W25Q_CHIP_ERASE, .size = 1 };
+	gpio_low(flash.dev.pin);
+	error_t e = spi_transmit(flash.dev, _);
+	gpio_high(flash.dev.pin);
+	return e;
 }
 /**
  * Gets last byte of model ID, indicating capacity
  */
-static result8_t get_capacity_id(w25q_t flash) {
+static result_uint8_t get_capacity_id(w25q_t flash) {
 	uint8_t chipid[3] = { 0 };
 	buffer_view_t buffer = { .data = chipid, .size = sizeof(chipid) };
-	error_t error = spi_readN(flash.dev, W25Q_ID, buffer);
-	result8_t out = { .hasError = error, .value = chipid[2] };
+	buffer_view_t _ = { .data = &W25Q_ID, .size = 1 };
+	gpio_low(flash.dev.pin);
+	spi_transmit(flash.dev, _);
+	error_t e = spi_receive(flash.dev, buffer);
+	gpio_high(flash.dev.pin);
+	result_uint8_t out = { .hasError = e, .value = chipid[2] };
 	return out;
 }
 
@@ -37,7 +46,7 @@ static result8_t get_capacity_id(w25q_t flash) {
 static void wait_busy(w25q_t flash) {
 	uint8_t status = 0xFF;
 	buffer_view_t data = { .data = &status, .size = 1 };
-	buffer_view_t instr = { .data = (uint8_t*)&W25Q_RD_STATUS1, .size = 1 };
+	buffer_view_t instr = { .data = (uint8_t*) &W25Q_RD_STATUS1, .size = 1 };
 	gpio_low(flash.dev.pin);
 	spi_transmit(flash.dev, instr);
 	do {
@@ -106,7 +115,7 @@ uint32_t page_count_from_model(w25q_model_e model) {
 error_t w25q_init(w25q_t *flash, bool check_capacity) {
 	gpio_high(flash->dev.pin);
 
-	result8_t res = get_capacity_id(*flash);
+	result_uint8_t res = get_capacity_id(*flash);
 	if (res.hasError) {
 		return res.hasError;
 	}
@@ -125,11 +134,15 @@ error_t w25q_init(w25q_t *flash, bool check_capacity) {
 		flash->page_count = real_count;
 	}
 
-	uint8_t status_default = 0x00;
-	buffer_view_t status_reg = { .data = &status_default, .size = 1 };
-	spi_writeN(flash->dev, W25Q_WR_STATUS1, status_reg);
+	uint8_t status_default[] = {W25Q_WR_STATUS1, 0x00};
+	buffer_view_t status_reg = { .data = status_default, .size = sizeof(status_default) };
+
+	gpio_low(flash->dev.pin);
+	error_t e = spi_transmit(flash->dev, status_reg);
+	gpio_high(flash->dev.pin);
+
 	wait_busy(*flash); // just in case
-	return 0;
+	return e;
 }
 
 error_t w25q_page_write(w25q_t flash, buffer_view_t tx_data,
