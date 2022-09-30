@@ -13,8 +13,8 @@
 #define UBLOX_I2C
 #if defined UBLOX_I2C
 typedef i2c_device_t connection_t;
-#define uart_transmit i2c_transmit
-#define uart_receive i2c_receive
+#define gps_transmit i2c_transmit
+#define gps_receive i2c_receive
 
 #define UBLOX_I2C_ADDR 0x42
 #define UBLOX_STREAM_REG 0xFF
@@ -23,6 +23,8 @@ typedef i2c_device_t connection_t;
 
 #else
 typedef uart_connection_t connection_t;
+#define gps_transmit uart_transmit
+#define gps_receive uart_receive
 #endif
 
 typedef struct {
@@ -63,7 +65,7 @@ typedef struct {
 	int32_t headVeh; 	// Heading of vehicle (2-D), this is only valid when headVehValid is set, otherwise the output is set to the heading of motion
 	int16_t magDev; 	// Magnetic declination. Only supported in ADR 4.10 and later.
 	uint16_t magAcc; 	// Magnetic declination accuracy. Only supported in ADR 4.10 and later.
-} ublox_pvt_t;
+} __attribute__((packed)) ublox_pvt_t;
 
 typedef union {
 	ublox_pvt_t values;
