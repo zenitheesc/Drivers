@@ -8,7 +8,7 @@
 #include "ina219.h"
 
 static result_uint16_t read(INA219_t ina, uint8_t address) {
-	buffer_view_t addr = {.data=&address, size=1};
+	buffer_view_t addr = {.data=&address, .size=1};
 	error_t e = i2c_transmit(ina.device, addr);
 	uint8_t value_buf[2] = {0};
 	buffer_view_t response = {.data=value_buf, .size=sizeof(value_buf)};
@@ -20,16 +20,16 @@ static result_uint16_t read(INA219_t ina, uint8_t address) {
 
 static error_t write(INA219_t ina, uint8_t address, uint16_t value) {
 	uint8_t transaction_buf[3] = {address, value >> 8, value}; 
-	buffer_view_t transaction = {.data=transaction_buf, size=sizeof(transaction_buf)};
+	buffer_view_t transaction = {.data=transaction_buf, .size=sizeof(transaction_buf)};
 	return i2c_transmit(ina.device, transaction);
-
+}
 
 error_t INA219_reset(INA219_t ina) {
 
 		uint16_t config_rst = 0x0000;
 		config_rst |= INA_RST;
 
-		return write(ina.device, INA_CONFIG_ADR, config_rst);
+		return write(ina, INA_CONFIG_ADR, config_rst);
 }
 
 error_t INA219_config(INA219_t ina) {
@@ -45,14 +45,14 @@ error_t INA219_config(INA219_t ina) {
 		config_register |= ina.config.ShuntADCResolution;
 		config_register |= ina.config.OperationMode;
 
-		return write(ina.device, INA_CONFIG_ADR, config_register);
+		return write(ina, INA_CONFIG_ADR, config_register);
 }
 
 error_t INA219_measure(INA219_t ina, INA219_values_t *medida) {
 
 		//Shunt Voltage
 		//Leitura do valor i2c no registrador do shunt
-		result_uint16_t raw_s = read(ina.device, INA_SHUNT_VOLT);
+		result_uint16_t raw_s = read(ina, INA_SHUNT_VOLT);
 
 		if (raw_s.hasError){
 			return raw_s.hasError;
@@ -71,7 +71,7 @@ error_t INA219_measure(INA219_t ina, INA219_values_t *medida) {
 
 		//Bus Voltage
 		//Leitura do valor i2c do registrador Bus
-		result_uint16_t raw_b = read(ina.device, INA_BUS_VOLT);
+		result_uint16_t raw_b = read(ina, INA_BUS_VOLT);
 
 		if (raw_b.hasError) {
 			return raw_b.hasError;
