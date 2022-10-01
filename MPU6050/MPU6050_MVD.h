@@ -9,8 +9,6 @@
 #define INC_MPU6050_MVD_H_
 
 #include "platform/platform.h"
-
-
 /* REGISTRADORES */
 
 // Name				//Adress(hex)
@@ -23,7 +21,6 @@
 #define MPU_FIFO_EN			(uint8_t)(0x23) //Default desabilitado
 #define MPU_INT_ENABLE		(uint8_t)(0x38) //Default desabilitado
 #define MPU_INT_STATUS		(uint8_t)(0x3A) //Read only
-
 // Registradores de leitura dos dados
 // Acelerômetro
 #define MPU_MEASURES		(uint8_t)(0x3B)
@@ -140,7 +137,6 @@ error_t MPU6050_init(MPU6050_t mpu);
 
 //Função para leitura burst-read
 error_t MPU6050_measure(MPU6050_t mpu, MPU6050_values_t *medida);
-
 
 
 #endif /* INC_MPU6050_MVD_H_ */

@@ -7,7 +7,8 @@
 
 #ifndef INC_STORAGE_W25Q_C_
 #define INC_STORAGE_W25Q_C_
-#include "bsp.h"
+#include "platform/platform.h"
+#include <stdbool.h>
 typedef struct {
 	/**
 	 * Page Count on Chip

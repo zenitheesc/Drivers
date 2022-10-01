@@ -99,8 +99,6 @@ error_t MPU6050_init(MPU6050_t mpu) {
 	return 0;
 }
 
-
-
 /* Leituras do sensor */
 
 error_t MPU6050_measure(MPU6050_t mpu, MPU6050_values_t *medida) {
