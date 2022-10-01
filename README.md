@@ -32,9 +32,9 @@
 </p>
 
 <p align="center">
-    <a href="#objective">Objective</a> 
-    <a href="#environment">Environment</a> 
-    <a href="#how-to-use-a-driver">How to use a Driver</a>
+    <a href="#objective">Objective</a> •
+    <a href="#environment">Environment</a> •
+    <a href="#how-to-use-a-driver">How to use a Driver</a> •
     <a href="#adding-a-driver">Adding a Driver</a>
 </p>
 
