@@ -27,6 +27,16 @@ includes to other arduino (or esp-idf) libraries. Check issue #43.
 
 ## Specification
 
+<p align="center">
+    <a href="#common">Common</a> •
+    <a href="#gpio">GPIO</a> •
+    <a href="#i2c">I2C</a> •
+    <a href="#spi">SPI</a> •
+    <a href="#uart">UART</a> •
+    <a href="#adc">ADC</a> •
+    <a href="#pwm">PWM</a> 
+</p>
+
 ### Common
 
 #### Types
@@ -222,7 +232,7 @@ Transmit bytes via UART
 ```c
 error_t uart_receive(uart_connection_t conn, buffer_view_t buffer);
 ```
-Transmit bytes via UART
+Receive bytes via UART
 
 ### ADC
 
@@ -246,19 +256,60 @@ ADC Type
 
  - `adc_init`
 ```c
-error_t adc_init(adc_t* adc);
+error_t adc_init(adc_t *adc);
 ```
 ADC initialization 
 
  - `adc_read`
 ```c
-result_uint16_t adc_read(adc_t* adc);
+result_uint16_t adc_read(adc_t *adc);
 ```
 ADC Read raw value
 
  - `adc_raw_to_voltage`
 ```c
-float adc_raw_to_voltage(adc_t adc, const uint16_t value);
+float adc_raw_to_voltage(const adc_t *adc, const uint16_t value);
 ```
 
 ADC conversion to volts.
+
+### PWM
+
+#### Types
+
+ - `pwm_handle_t`
+```c
+typedef <PWM_Handle_Type> pwm_handle_t;
+```
+PWM Handle Type
+
+
+ - `pwm_channel_t`
+```c
+typedef <PWM_Channel_Type_> pwm_channel_t;
+```
+PWM Channel Type
+
+- `pwm_t`
+```c
+typedef struct {
+  pwm_handle_t handle;
+  pwm_channel_t channel;
+  uint8_t bits;
+} pwm_t;
+```
+PWM Type
+
+#### Functions
+
+ -`pwm_start`
+```C
+error_t pwm_start(pwm_t pwm)
+```
+PWM start conection
+
+ -`pwm_write`
+```c
+error_t pwm_write(pwm_t pwm)
+```
+PWM module signal
