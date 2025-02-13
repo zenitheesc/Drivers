@@ -302,13 +302,13 @@ PWM Type
 
 #### Functions
 
- -`pwm_start`
+- `pwm_start`
 ```C
 error_t pwm_start(pwm_t pwm)
 ```
 PWM start conection
 
- -`pwm_write`
+- `pwm_write`
 ```c
 error_t pwm_write(pwm_t pwm)
 ```
