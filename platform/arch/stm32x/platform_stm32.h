@@ -218,7 +218,7 @@
  
  EXPORT float adc_raw_to_voltage(const adc_t *adc, uint16_t value) {
    const float volts_per_step =
-       (adc->voltage_reference - 0.f) / ((1 << adc.bits) - 1);
+       (adc->voltage_reference - 0.f) / ((1 << adc->bits) - 1);
    return volts_per_step * value;
  }
  

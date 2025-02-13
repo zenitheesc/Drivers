@@ -48,7 +48,7 @@ float mpx5700_get_pressure(mpx5700_t mpx) {
   }
 
   // Tensão que chega no ADC
-  const float read_voltage = adc_raw_to_voltage(*mpx.adc,raw.value);
+  const float read_voltage = adc_raw_to_voltage(mpx.adc,raw.value);
 
   // Tensão saindo do Sensor
   const float sensor_out = inv_adjustment_circuit(read_voltage);
