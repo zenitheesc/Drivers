@@ -1,3 +1,6 @@
 [submodule "SX127X-FSK-LoRa"]
 	path = SX127X-FSK-LoRa
 	url = https://github.com/JulioCalandrin/SX127X-FSK-LoRa.git
+[submodule "Platform-Lib"]
+	path = Platform-Lib
+	url = https://github.com/zenitheesc/Platform-Lib.git
