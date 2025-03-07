@@ -33,8 +33,8 @@
 
 <p align="center">
     <a href="#objective">Objective</a> •
-    <a href="#environment">Environment</a> •
     <a href="#how-to-use-a-driver">How to use a Driver</a> •
+    <a href="#environment">Environment</a> •
     <a href="#adding-a-driver">Adding a Driver</a>
 </p>
 
@@ -53,6 +53,9 @@ drivers use instead of platform specific functions. For example, an I2C transact
 First the `platform.h` file sets up the common interface to the driver, common `structs` and function signatures. Then a bunch of preprocessor directives try to guess what type of project this is and include the correct platform implementation (header-only library) in the `arch` folder.
 
 FYI, if platform can't find an implementation it defaults to a PC debug mode, where an implementation that just prints to stdout is used.
+
+#### Where are platform archives?
+To find platform archives, go to the [`Platform_Lib`](https://github.com/zenitheesc/Platform-Lib/tree/main) repository. Then go to the platform folder with library archives, such as `platform.h`, and another to the arch folder.
 
 ## Environment
 
